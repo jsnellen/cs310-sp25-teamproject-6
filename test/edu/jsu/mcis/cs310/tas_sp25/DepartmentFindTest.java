@@ -4,6 +4,8 @@ import edu.jsu.mcis.cs310.tas_sp25.dao.*;
 import org.junit.*;
 import static org.junit.Assert.*;
 
+// Tests Passed - Weston Wyatt [2/22/2025]
+
 public class DepartmentFindTest {
 
     private DAOFactory daoFactory;

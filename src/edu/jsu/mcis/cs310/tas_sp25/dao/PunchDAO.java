@@ -41,8 +41,8 @@ public class PunchDAO {
                     while (rs.next()) {
 
                        
-                        
-                        punch = new Punch(terminalid,badge,punchtype); // ???
+                        // badge or punch type is not initialized anywhere in the code - Weston
+                        punch = new Punch(terminalid, badge, punchtype); // ???
 
                     }
 
