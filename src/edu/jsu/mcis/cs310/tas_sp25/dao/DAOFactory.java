@@ -36,9 +36,13 @@ public final class DAOFactory {
         return new BadgeDAO(this);
     }
     
+    // Added method to get PunchDAO - Weston Wyatt [2/23/2025]
+    public PunchDAO getPunchDAO() {
+        return new PunchDAO(this);
+    }
+    
     // Added method to get DepartmentDAO - Weston Wyatt [2/22/2025]
     public DepartmentDAO getDepartmentDAO() {
         return new DepartmentDAO(this);
     }
-
 }

@@ -6,6 +6,9 @@ package edu.jsu.mcis.cs310.tas_sp25;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.ZonedDateTime;
+import java.time.ZoneOffset;
 
 /**
  *
@@ -18,7 +21,9 @@ public class Punch {
     private final EventType punchtype;
     private final PunchAdjustmentType adjustmentType = null;
     private final Integer id;
-    private LocalDateTime orginaltimestamp = null;
+    
+    //changed orginaltimestamp to originaltimestamp - WW
+    private LocalDateTime originaltimestamp = null;
     
     // Constructor
     public Punch(int terminalid, Badge badge, EventType punchtype){ // for new punch objects
@@ -27,11 +32,11 @@ public class Punch {
         this.punchtype = punchtype;
         this.id = null;
     }
-    public Punch(int id, int terminalid, Badge badge,LocalDateTime orginaltimestamp, EventType punchtype){ // for existing punch objects
-        this.id = null;
+    public Punch(int id, int terminalid, Badge badge,LocalDateTime originaltimestamp, EventType punchtype){ // for existing punch objects
+        this.id = id;  // Fixed: assign the provided id instead of null - WW
         this.terminalid = terminalid;
         this.badge = badge;
-        this.orginaltimestamp = orginaltimestamp;
+        this.originaltimestamp = originaltimestamp;
         this.punchtype = punchtype;
         
     }
@@ -50,15 +55,46 @@ public class Punch {
         return punchtype;
     }
 
-    public LocalDateTime getOrginaltimestamp() {
-        return orginaltimestamp;
+    public LocalDateTime getOriginaltimestamp() {
+        return originaltimestamp;
     }
     public int id(){
         return id;
     }
     
-    
-    
+    // created this printOriginal method -ww
+    public String printOriginal() {
+        // Define date-time format "SUN 2/23/2025 05:26:07"
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE MM/dd/yyyy HH:mm:ss");
+
+        String formattedTimestamp = originaltimestamp.format(formatter);
+
+        // Convert the three-letter day abbreviation to uppercase
+        String dayAbbrev = formattedTimestamp.substring(0, 3).toUpperCase();
+        String rest = formattedTimestamp.substring(3);
+        formattedTimestamp = dayAbbrev + rest;
+
+        // Map the EventType to a string
+        String eventDescription;
+        switch (punchtype) {
+            case CLOCK_IN:
+                eventDescription = "CLOCK IN";
+                break;
+            case CLOCK_OUT:
+                eventDescription = "CLOCK OUT";
+                break;
+            case TIME_OUT:
+                eventDescription = "TIME OUT";
+                break;
+            default:
+                eventDescription = "UNKNOWN";
+                break;
+        }
+
+        // Construct and return the formatted string
+        return String.format("#%s %s: %s", badge.getId(), eventDescription, formattedTimestamp);
+    }
+
     
     //toString
     public String toString() {
