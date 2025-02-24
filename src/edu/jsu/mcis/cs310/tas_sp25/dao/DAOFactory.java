@@ -49,4 +49,9 @@ public final class DAOFactory {
     public DepartmentDAO getDepartmentDAO() {
         return new DepartmentDAO(this);
     }
+    // Added getter method for EmployeeDAO, Nehemias Lucas 2-24-2025
+    public EmployeeDAO getEmployeeDAO(){ 
+        return new EmployeeDAO(this);
+    }
+    }
 }
