@@ -97,6 +97,34 @@ public class PunchDAO {
     
     }
     
-           
+    /*
+    public int create(Punch punch){
+        int newId = 0;
+        
+        try {
+            
+        } catch (SQLException e) {
+            // In case of error, return default value of 0
+            return 0;
+        } finally {
+            if (keys != null) {
+                try {
+                    keys.close();
+                } catch (SQLException e) {
+                    throw new DAOException(e.getMessage());
+                }
+            }
+            if (ps != null) {
+                try {
+                    ps.close();
+                } catch (SQLException e) {
+                    throw new DAOException(e.getMessage());
+                }
+            }
+        }
+        
+        return newId;
+    }
+    */
     
 }
