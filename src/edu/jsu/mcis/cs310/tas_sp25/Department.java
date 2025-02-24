@@ -4,9 +4,9 @@ package edu.jsu.mcis.cs310.tas_sp25;
 
 public class Department {
 
-    private int id;
-    private String description;
-    private int terminalid;
+    private final int id;
+    private final String description;
+    private final int terminalid;
     
     public Department(int id, String description, int terminalid) {
         this.id = id;
