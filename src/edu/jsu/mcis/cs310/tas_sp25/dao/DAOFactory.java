@@ -41,6 +41,10 @@ public final class DAOFactory {
         return new PunchDAO(this);
     }
     
+    public ShiftDAO getShiftDAO() {
+        return new ShiftDAO(this);
+    }
+    
     // Added method to get DepartmentDAO - Weston Wyatt [2/22/2025]
     public DepartmentDAO getDepartmentDAO() {
         return new DepartmentDAO(this);

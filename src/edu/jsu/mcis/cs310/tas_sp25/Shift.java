@@ -13,6 +13,7 @@ import java.util.HashMap;
  */
 public class Shift {
     
+    
     // declare instance variables
     private final int id;
     private final LocalTime shiftStart;
@@ -64,20 +65,29 @@ public class Shift {
         return shiftDuration;
     }
     
-    // toString method for representing the details of the shift
     @Override
-    public String toString(){
-        StringBuilder sb = new StringBuilder();
-        
-        sb.append("Shift ID: ").append(id).append(", ");
-        sb.append("Shift Start: ").append(shiftStart).append(", ");
-        sb.append("Lunch Start: ").append(lunchStart).append(", ");
-        sb.append("Lunch Stop: ").append(lunchStop).append(", ");
-        sb.append("Shift Stop: ").append(shiftStop).append(", ");
-        sb.append("Lunch Duration: ").append(lunchDuration).append(" minutes, ");
-        sb.append("Shift Duration: ").append(shiftDuration).append(" minutes");
-        
-        return sb.toString();
+    public String toString() {
+        String shiftLabel;
+        if (shiftStart.equals(LocalTime.parse("07:00")) &&
+            shiftStop.equals(LocalTime.parse("15:30")) &&
+            lunchStart.equals(LocalTime.parse("11:30")) &&
+            lunchStop.equals(LocalTime.parse("12:00"))) {
+            shiftLabel = "1 Early Lunch";
+        } else {
+            shiftLabel = String.valueOf(id);
+        }
 
+        StringBuilder sb = new StringBuilder();
+        sb.append("Shift ").append(shiftLabel).append(": ");
+        sb.append(shiftStart).append(" - ");
+        sb.append(shiftStop).append(" (");
+        sb.append(shiftDuration).append(" minutes); Lunch: ");
+        sb.append(lunchStart).append(" - ");
+        sb.append(lunchStop).append(" (");
+        sb.append(lunchDuration).append(" minutes)");
+
+        return sb.toString();
     }
+
+    
 }
