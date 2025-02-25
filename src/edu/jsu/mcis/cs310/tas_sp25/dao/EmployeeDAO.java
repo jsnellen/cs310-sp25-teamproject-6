@@ -51,8 +51,8 @@ public class EmployeeDAO {
                         
                         // BadgeDAO, DepartmentDAO, and ShiftDAO used to retrieve desired badge, department, and shift respectively 
                         String badgeId = rs.getString("badgeid");
-                        BadgeDAO BadgeDAO = new BadgeDAO (daoFactory);
-                        Badge badge = BadgeDAO.find(badgeId);
+                        BadgeDAO badgeDAO = new BadgeDAO (daoFactory);
+                        Badge badge = badgeDAO.find(badgeId);
                         
                         int departmentId = rs.getInt("departmentid");
                         DepartmentDAO DepartmentDAO = new DepartmentDAO (daoFactory);
@@ -62,13 +62,13 @@ public class EmployeeDAO {
                         ShiftDAO ShiftDAO = new ShiftDAO (daoFactory);
                         Shift shift = ShiftDAO.find(shiftId);
                         
-                        // Get employeetype and change to enum
-                        String employeetypeid = rs.getString("employeetypeid");
+                        // Get employeetype and change from numeric to enum
+                        int employeetypeid = rs.getInt("employeetypeid");// referenced from punchDAO, not sure if it works 
                         EmployeeType employeetype = EmployeeType.values() [employeetypeid];
                         
                      
                         // Construct employee object
-                        employee = new employee (id, firstname, middlename, lastname, badge, department, shift, employeetype);
+                        employee = new Employee (employeeId, firstname, middlename, lastname, badge, department, shift, employeetype);
 
                     }
 
