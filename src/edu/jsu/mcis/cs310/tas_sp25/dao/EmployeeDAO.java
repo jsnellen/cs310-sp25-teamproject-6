@@ -44,9 +44,31 @@ public class EmployeeDAO {
                     rs = ps.getResultSet();
 
                     while (rs.next()) {
-
-                        String description = rs.getString("description");
-                        employee = new Employee();
+                        int employeeId = rs.getInt("id");
+                        String firstname = rs.getString("firstname");
+                        String middlename = rs.getString("middlename");
+                        String lastname = rs.getString("lastname");
+                        
+                        // BadgeDAO, DepartmentDAO, and ShiftDAO used to retrieve desired badge, department, and shift respectively 
+                        String badgeId = rs.getString("badgeid");
+                        BadgeDAO BadgeDAO = new BadgeDAO (daoFactory);
+                        Badge badge = BadgeDAO.find(badgeId);
+                        
+                        int departmentId = rs.getInt("departmentid");
+                        DepartmentDAO DepartmentDAO = new DepartmentDAO (daoFactory);
+                        Department department = DepartmentDAO.find(departmentId);
+                        
+                        int shiftId = rs.getInt("shiftid");
+                        ShiftDAO ShiftDAO = new ShiftDAO (daoFactory);
+                        Shift shift = ShiftDAO.find(shiftId);
+                        
+                        // Get employeetype and change to enum
+                        String employeetypeid = rs.getString("employeetypeid");
+                        EmployeeType employeetype = EmployeeType.values() [employeetypeid];
+                        
+                     
+                        // Construct employee object
+                        employee = new employee (id, firstname, middlename, lastname, badge, department, shift, employeetype);
 
                     }
 

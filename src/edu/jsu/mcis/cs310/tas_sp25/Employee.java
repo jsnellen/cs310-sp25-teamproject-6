@@ -69,8 +69,8 @@ public class Employee { //Class
     public EmployeeType getEmployeetype() {
         return employeetype;
     }
-
     
+        
     // ToString method
     @Override
     public String toString() {
