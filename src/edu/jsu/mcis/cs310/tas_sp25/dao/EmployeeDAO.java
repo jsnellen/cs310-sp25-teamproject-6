@@ -5,6 +5,7 @@
 package edu.jsu.mcis.cs310.tas_sp25.dao;
 import java.sql.*;
 import edu.jsu.mcis.cs310.tas_sp25.*;
+import java.time.LocalDateTime;
 
 
 /**
@@ -13,7 +14,7 @@ import edu.jsu.mcis.cs310.tas_sp25.*;
  */
 public class EmployeeDAO {
     
-    private static final String QUERY_FIND = "SELECT *  FROM WHERE id =?";
+    private static final String QUERY_FIND = "SELECT * FROM employee WHERE id = ?";
     private final DAOFactory daoFactory;
     
     EmployeeDAO (DAOFactory daoFactory) {
@@ -22,7 +23,7 @@ public class EmployeeDAO {
 
     } 
     
-    public Employee find(String id){
+    public Employee find(int id){
         Employee employee = null;
 
         PreparedStatement ps = null;
@@ -35,7 +36,7 @@ public class EmployeeDAO {
             if (conn.isValid(0)) {
 
                 ps = conn.prepareStatement(QUERY_FIND);
-                ps.setString(1, id);
+                ps.setInt(1, id);
 
                 boolean hasresults = ps.execute();
 
@@ -66,9 +67,12 @@ public class EmployeeDAO {
                         int employeetypeid = rs.getInt("employeetypeid");// referenced from punchDAO, not sure if it works 
                         EmployeeType employeetype = EmployeeType.values() [employeetypeid];
                         
+                        Timestamp activeTimestamp = rs.getTimestamp("active");
+                        LocalDateTime active = (activeTimestamp != null) ? activeTimestamp.toLocalDateTime() : null;
+                        
                      
                         // Construct employee object
-                        employee = new Employee (employeeId, firstname, middlename, lastname, badge, department, shift, employeetype);
+                        employee = new Employee (employeeId, firstname, middlename, lastname, badge, department, shift, employeetype, active);
 
                     }
 

@@ -5,6 +5,7 @@
 package edu.jsu.mcis.cs310.tas_sp25;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  *
@@ -22,7 +23,7 @@ public class Employee { //Class
     
 
     // Constructor
-    public Employee(int id, String firstname, String middlename, String lastname, Badge badge, Department department, Shift shift, EmployeeType employeetype) {
+    public Employee(int id, String firstname, String middlename, String lastname, Badge badge, Department department, Shift shift, EmployeeType employeetype, LocalDateTime active) {
         this.id = id;
         this.firstname = firstname;
         this.middlename = middlename;
@@ -31,6 +32,8 @@ public class Employee { //Class
         this.department = department;
         this.shift = shift;
         this.employeetype = employeetype;
+        // Added active timestamp to Constructor
+        this.active = active;
     }
     // Getters
 
@@ -71,22 +74,19 @@ public class Employee { //Class
     }
     
         
-    // ToString method
+    // ToString method 
+    //rewrote this to pass tests in EmployeeFindTest.Java
     @Override
     public String toString() {
-        StringBuilder s = new StringBuilder();
+        // Format the active date as MM/dd/yyyy, if available
+        String activeStr = (active != null) ? active.format(DateTimeFormatter.ofPattern("MM/dd/yyyy")) : "null";
 
-        s.append("#ID").append(id).append(':');
-        s.append(' ').append(firstname).append(',');
-        s.append(' ').append(lastname).append(',');
-        s.append(' ').append(middlename).append(' ');
-        s.append('(').append(badge).append(')');
-        s.append(", Type: ").append(employeetype).append(',');
-        s.append(", Department: ").append(department).append(',');
-        s.append(", Active: ").append(active);
-        
-
-        return s.toString();                        
+        return "ID #" + id + ": " + 
+               lastname + ", " + firstname + " " + middlename + 
+               " (#" + badge.getId() + "), " +
+               "Type: " + employeetype + ", " +
+               "Department: " + department.getDescription() + ", " +
+               "Active: " + activeStr + "";
     }
     
     
