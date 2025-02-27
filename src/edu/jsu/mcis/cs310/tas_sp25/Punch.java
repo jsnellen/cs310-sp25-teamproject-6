@@ -67,32 +67,19 @@ public class Punch {
         // Define date-time format "SUN 2/23/2025 05:26:07"
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE MM/dd/yyyy HH:mm:ss");
 
-        String formattedTimestamp = originaltimestamp.format(formatter);
+        // Convert the entire string to uppercase
+        String formattedTimestamp = originaltimestamp.format(formatter).toUpperCase();
 
-        // Convert the three-letter day abbreviation to uppercase
-        String dayAbbrev = formattedTimestamp.substring(0, 3).toUpperCase();
-        String rest = formattedTimestamp.substring(3);
-        formattedTimestamp = dayAbbrev + rest;
+        // Get the EventType string representation
+        String eventDescription = punchtype.toString();
 
-        // Map the EventType to a string
-        String eventDescription;
-        switch (punchtype) {
-            case CLOCK_IN:
-                eventDescription = "CLOCK IN";
-                break;
-            case CLOCK_OUT:
-                eventDescription = "CLOCK OUT";
-                break;
-            case TIME_OUT:
-                eventDescription = "TIME OUT";
-                break;
-            default:
-                eventDescription = "UNKNOWN";
-                break;
-        }
+        // StringBuilder for constructing the string
+        StringBuilder sb = new StringBuilder();
+        sb.append("#").append(badge.getId());
+        sb.append(" ").append(eventDescription);
+        sb.append(": ").append(formattedTimestamp);
 
-        // Construct and return the formatted string
-        return String.format("#%s %s: %s", badge.getId(), eventDescription, formattedTimestamp);
+        return sb.toString();
     }
 
     
