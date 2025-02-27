@@ -15,6 +15,8 @@ import java.time.LocalDateTime;
 public class EmployeeDAO {
     
     private static final String QUERY_FIND = "SELECT * FROM employee WHERE id = ?";
+    private static final String QUERY_FIND_BY_BADGE = "SELECT * FROM employee WHERE badgeid = ?";
+
     private final DAOFactory daoFactory;
     
     EmployeeDAO (DAOFactory daoFactory) {
@@ -23,6 +25,7 @@ public class EmployeeDAO {
 
     } 
     
+    // Find method using ID
     public Employee find(int id){
         Employee employee = null;
 
@@ -76,7 +79,7 @@ public class EmployeeDAO {
 
                     }
 
-                }
+                }    
 
             }
 
@@ -104,6 +107,64 @@ public class EmployeeDAO {
         }
 
         return employee;
+    }
 
+
+// Find method using Badge
+
+    public Employee find(Badge badge){
+        Employee employee = null;
+
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+
+            Connection conn = daoFactory.getConnection();
+
+            if (conn.isValid(0)) {
+
+                ps = conn.prepareStatement(QUERY_FIND_BY_BADGE);
+                ps.setString(1, badge.getId());
+
+                boolean hasresults = ps.execute();
+
+                if (hasresults) {
+
+                    rs = ps.getResultSet();
+
+                    while (rs.next()) {
+                        int employeeId = rs.getInt("employeeid");
+                        employee = find(employeeId);
+                    }
+
+                }    
+
+            }
+
+        } catch (SQLException e) {
+
+            throw new DAOException(e.getMessage());
+
+        } finally {
+
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    throw new DAOException(e.getMessage());
+                }
+            }
+            if (ps != null) {
+                try {
+                    ps.close();
+                } catch (SQLException e) {
+                    throw new DAOException(e.getMessage());
+                }
+            }
+
+        }
+
+        return employee;
     }
 }
