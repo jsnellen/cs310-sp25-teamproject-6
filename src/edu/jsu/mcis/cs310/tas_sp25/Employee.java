@@ -81,12 +81,18 @@ public class Employee { //Class
         // Format the active date as MM/dd/yyyy, if available
         String activeStr = (active != null) ? active.format(DateTimeFormatter.ofPattern("MM/dd/yyyy")) : "null";
 
-        return "ID #" + id + ": " + 
-               lastname + ", " + firstname + " " + middlename + 
-               " (#" + badge.getId() + "), " +
-               "Type: " + employeetype + ", " +
-               "Department: " + department.getDescription() + ", " +
-               "Active: " + activeStr + "";
+        // StringBuilder for constructing the string
+        StringBuilder sb = new StringBuilder();
+        sb.append("ID #").append(id);
+        sb.append(": ").append(lastname);
+        sb.append(", ").append(firstname);
+        sb.append(" ").append(middlename);
+        sb.append(" (#").append(badge.getId());
+        sb.append("), ").append("Type: ").append(employeetype);
+        sb.append(", ").append("Department: ").append(department.getDescription());
+        sb.append(", ").append("Active: ").append(activeStr);
+
+        return sb.toString();
     }
     
     
