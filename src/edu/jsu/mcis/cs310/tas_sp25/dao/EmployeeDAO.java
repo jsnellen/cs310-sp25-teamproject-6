@@ -110,21 +110,22 @@ public class EmployeeDAO {
     }
 
 
-// Find method using Badge
+// Find method using Badge as object
 
     public Employee find(Badge badge){
+        //Initializing variables
         Employee employee = null;
 
         PreparedStatement ps = null;
         ResultSet rs = null;
 
         try {
-
+            // Get connection from daoFactory
             Connection conn = daoFactory.getConnection();
 
             if (conn.isValid(0)) {
 
-                ps = conn.prepareStatement(QUERY_FIND_BY_BADGE);
+                ps = conn.prepareStatement(QUERY_FIND_BY_BADGE); // Query statement using badge
                 ps.setString(1, badge.getId());
 
                 boolean hasresults = ps.execute();
@@ -134,8 +135,8 @@ public class EmployeeDAO {
                     rs = ps.getResultSet();
 
                     while (rs.next()) {
-                        int employeeId = rs.getInt("employeeid");
-                        employee = find(employeeId);
+                        int employeeId = rs.getInt("id"); // Gets employee id
+                        employee = find(employeeId); // Uses employee id to call method find(int id)
                     }
 
                 }    
@@ -165,6 +166,6 @@ public class EmployeeDAO {
 
         }
 
-        return employee;
+        return employee; // returns
     }
 }
