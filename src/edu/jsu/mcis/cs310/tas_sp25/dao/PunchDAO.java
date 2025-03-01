@@ -8,6 +8,12 @@ import edu.jsu.mcis.cs310.tas_sp25.*;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import edu.jsu.mcis.cs310.tas_sp25.EventType;
+import edu.jsu.mcis.cs310.tas_sp25.Badge;
+
+
 
 /**
  *
@@ -19,6 +25,7 @@ public class PunchDAO {
     // fixed query to use event and id 
     private static final String QUERY_FIND = "SELECT * FROM event WHERE id = ?";
     private final DAOFactory daoFactory;
+    private static final String QUERY_LIST = "SELECT * FROM event WHERE badgeid = ? AND DATE(timestamp) = ? ORDER BY timestamp";
     
     PunchDAO(DAOFactory daoFactory)
     { 
@@ -127,4 +134,118 @@ public class PunchDAO {
     }
     */
     
+    /**
+     * Retrieves a list of punches for a specific badge on a particular date.
+     * Parinita Sedai 2/25/2025
+     * @param badge The Badge object for which to retrieve the punch records.
+     * @param date The specific date to query punches for.
+     * @return An ArrayList of Punch objects for the given badge and date.
+     */
+    public ArrayList <Punch> list (Badge badge, LocalDate date) {
+        ArrayList <Punch> punches = new ArrayList<>();
+        
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        try {
+            Connection conn = daoFactory.getConnection();
+            if (conn.isValid(0)) {
+                ps = conn.prepareStatement(QUERY_LIST);
+                ps.setString(1, badge.getId());
+                ps.setDate(2,Date.valueOf(date));
+                
+                boolean hasResults = ps.execute();
+                
+                if (hasResults) {
+                    rs = ps.getResultSet();
+                    
+                    while (rs.next()) {
+                        int terminalId = rs.getInt("terminalid");
+                        int id = rs.getInt("id");
+                        BadgeDAO badgeDAO = daoFactory.getBadgeDAO();
+                        Badge punchBadge = badgeDAO.find(rs.getString("badgeid"));
+                        LocalDateTime timestamp = rs.getTimestamp("timestamp").toLocalDateTime();
+                        EventType eventType = EventType.values() [rs.getInt("eventtypeid")];
+                        
+                        // Badge variable declaration
+                        Punch punch = new Punch (id, terminalId, punchBadge, timestamp, eventType);
+                        punches.add (punch);
+                        
+                    }
+                }
+                // Check for the last punch of the day and add an extra punch (if needed)
+                if(punches.size() > 0) {
+                    Punch lastPunch = punches.get(punches.size() - 1);
+
+                    if (lastPunch.getPunchtype() == EventType.CLOCK_IN){
+                        LocalDate nextFirstPunch = lastPunch.getOriginaltimestamp().toLocalDate().plusDays(1);
+
+                        ps = conn.prepareStatement(QUERY_LIST);
+
+                        ps.setString(1, badge.getId());
+                        ps.setDate(2, Date.valueOf(nextFirstPunch));
+                        hasResults = ps.execute();
+
+                        if (hasResults){
+                            rs = ps.getResultSet();
+                            rs.next();
+
+                            EventType nextPunchtype = EventType.values()[rs.getInt("eventtypeid")];
+
+                            if (nextPunchtype == EventType.CLOCK_OUT || nextPunchtype == EventType.TIME_OUT){
+                                Punch punch = find(rs.getInt("id"));
+
+                                punches.add(punch);
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new DAOException(e.getMessage());
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    throw new DAOException (e.getMessage());
+                }
+            }
+            if (ps != null) {
+                try {
+                    ps.close();
+                } catch (SQLException e) {
+                    throw new DAOException (e.getMessage());
+                }
+            }
+        }
+        return punches;
+    }    
+    
+    // Adding List method for punches from a range of Dates
+    
+    public ArrayList <Punch> entries (Badge badge, LocalDate begin, LocalDate end) {
+        ArrayList <Punch> resultEntries = new ArrayList ();
+        LocalDate date = begin;
+        
+        while (date.isBefore(end) || date.equals(end)) {
+            
+            ArrayList<Punch> dailyEntries = new ArrayList<>();
+   
+            try {
+                dailyEntries = list (badge, date);
+            } catch (IndexOutOfBoundsException e) {
+            }
+            
+            if (!dailyEntries.isEmpty() && !resultEntries.isEmpty()) {
+                if (resultEntries.get(resultEntries.size() - 1).toString().equals(dailyEntries.get(0).toString())) {
+                    resultEntries.remove(resultEntries.size() - 1);
+                }
+                
+            }
+            resultEntries.addAll(dailyEntries);
+            date = date.plusDays(1);
+        }
+        return resultEntries;
+    }
 }
