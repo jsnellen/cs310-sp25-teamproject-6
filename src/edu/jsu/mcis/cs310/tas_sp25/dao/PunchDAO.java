@@ -104,35 +104,73 @@ public class PunchDAO {
     
     }
     
-    /*
+    
     public int create(Punch punch){
         int newId = 0;
-        
-        try {
-            
-        } catch (SQLException e) {
-            // In case of error, return default value of 0
-            return 0;
-        } finally {
-            if (keys != null) {
-                try {
-                    keys.close();
-                } catch (SQLException e) {
-                    throw new DAOException(e.getMessage());
-                }
+    PreparedStatement ps = null;
+    ResultSet keys = null;
+
+    try {
+        Connection conn = daoFactory.getConnection();
+
+        if (conn.isValid(0)) {
+
+            Badge badge = punch.getBadge();
+            String badgeId = badge.getId();
+
+            PreparedStatement empPs = conn.prepareStatement("SELECT departmentid FROM employee WHERE badgeid = ?");
+            empPs.setString(1, badgeId);
+
+            ResultSet empRs = empPs.executeQuery();
+
+            int departmentId = -1;
+
+            if (empRs.next()) {
+                departmentId = empRs.getInt("departmentid");
             }
-            if (ps != null) {
-                try {
-                    ps.close();
-                } catch (SQLException e) {
-                    throw new DAOException(e.getMessage());
+
+            empRs.close();
+            empPs.close();
+
+            DepartmentDAO departmentDAO = new DepartmentDAO(daoFactory);
+            Department department = departmentDAO.find(departmentId);
+
+            int departmentTerminalId = department.getTerminalid();
+            int punchTerminalId = punch.getTerminalid();
+
+            boolean isAuthorized = (punchTerminalId == departmentTerminalId) || (punchTerminalId == 0);
+
+            if (isAuthorized) {
+
+                ps = conn.prepareStatement(QUERY_CREATE, Statement.RETURN_GENERATED_KEYS);
+
+                ps.setInt(1, punchTerminalId);
+                ps.setString(2, badgeId);
+                ps.setTimestamp(3, Timestamp.valueOf(LocalDateTime.now())); // Or use punch.getOriginaltimestamp()
+                ps.setInt(4, punch.getPunchtype().ordinal());
+
+                ps.executeUpdate();
+
+                keys = ps.getGeneratedKeys();
+                if (keys.next()) {
+                    newId = keys.getInt(1);
                 }
+
+            } else {
+                System.err.println("Authorization failed: Terminal ID does not match department terminal.");
+                newId = 0; // Unauthorized punch
             }
         }
-        
-        return newId;
+
+    } catch (SQLException e) {
+        throw new DAOException(e.getMessage());
+    } finally {
+        if (keys != null) try { keys.close(); } catch (SQLException e) { throw new DAOException(e.getMessage()); }
+        if (ps != null) try { ps.close(); } catch (SQLException e) { throw new DAOException(e.getMessage()); }
     }
-    */
+
+    return newId;
+    }
     
     /**
      * Retrieves a list of punches for a specific badge on a particular date.
