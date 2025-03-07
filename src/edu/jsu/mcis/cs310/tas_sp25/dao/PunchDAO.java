@@ -26,7 +26,9 @@ public class PunchDAO {
     private static final String QUERY_FIND = "SELECT * FROM event WHERE id = ?";
     private final DAOFactory daoFactory;
     private static final String QUERY_LIST = "SELECT * FROM event WHERE badgeid = ? AND DATE(timestamp) = ? ORDER BY timestamp";
-    
+     private final String QUERY_CREATE = "INSERT INTO event (id, terminalid, badgeid, timestamp, eventtypeid) "
+             + "VALUES (?,?,?,?,?)"; 
+     
     PunchDAO(DAOFactory daoFactory)
     { 
         this.daoFactory = daoFactory;
@@ -144,10 +146,12 @@ public class PunchDAO {
 
                 ps = conn.prepareStatement(QUERY_CREATE, Statement.RETURN_GENERATED_KEYS);
 
-                ps.setInt(1, punchTerminalId);
-                ps.setString(2, badgeId);
-                ps.setTimestamp(3, Timestamp.valueOf(LocalDateTime.now())); // Or use punch.getOriginaltimestamp()
-                ps.setInt(4, punch.getPunchtype().ordinal());
+                ps.setInt(1,0);
+                ps.setInt(2, punchTerminalId);
+                ps.setString(3, badgeId);
+                ps.setTimestamp(4, Timestamp.valueOf(LocalDateTime.now())); // Or use punch.getOriginaltimestamp()
+                ps.setInt(5, punch.getPunchtype().ordinal());
+                
 
                 ps.executeUpdate();
 
