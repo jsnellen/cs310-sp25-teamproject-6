@@ -26,7 +26,7 @@ public class PunchDAO {
     private static final String QUERY_FIND = "SELECT * FROM event WHERE id = ?";
     private final DAOFactory daoFactory;
     private static final String QUERY_LIST = "SELECT * FROM event WHERE badgeid = ? AND DATE(timestamp) = ? ORDER BY timestamp";
-     private final String QUERY_CREATE = "INSERT INTO event (id, terminalid, badgeid, timestamp, eventtypeid) "
+    private final String INSERT_PUNCH = "INSERT INTO event (id, terminalid, badgeid, timestamp, eventtypeid) "
              + "VALUES (?,?,?,?,?)"; 
      
     PunchDAO(DAOFactory daoFactory)
@@ -112,68 +112,67 @@ public class PunchDAO {
     PreparedStatement ps = null;
     ResultSet keys = null;
 
-    try {
-        Connection conn = daoFactory.getConnection();
+        try {
+            Connection conn = daoFactory.getConnection();
 
-        if (conn.isValid(0)) {
+            if (conn.isValid(0)) {
 
-            Badge badge = punch.getBadge();
-            String badgeId = badge.getId();
+                Badge badge = punch.getBadge();
+                String badgeId = badge.getId();
 
-            PreparedStatement empPs = conn.prepareStatement("SELECT departmentid FROM employee WHERE badgeid = ?");
-            empPs.setString(1, badgeId);
+                PreparedStatement empPs = conn.prepareStatement("SELECT departmentid FROM employee WHERE badgeid = ?");
+                empPs.setString(1, badgeId);
 
-            ResultSet empRs = empPs.executeQuery();
+                ResultSet empRs = empPs.executeQuery();
 
-            int departmentId = -1;
+                int departmentId = -1;
 
-            if (empRs.next()) {
-                departmentId = empRs.getInt("departmentid");
-            }
-
-            empRs.close();
-            empPs.close();
-
-            DepartmentDAO departmentDAO = new DepartmentDAO(daoFactory);
-            Department department = departmentDAO.find(departmentId);
-
-            int departmentTerminalId = department.getTerminalid();
-            int punchTerminalId = punch.getTerminalid();
-
-            boolean isAuthorized = (punchTerminalId == departmentTerminalId) || (punchTerminalId == 0);
-
-            if (isAuthorized) {
-
-                ps = conn.prepareStatement(QUERY_CREATE, Statement.RETURN_GENERATED_KEYS);
-
-                ps.setInt(1,0);
-                ps.setInt(2, punchTerminalId);
-                ps.setString(3, badgeId);
-                ps.setTimestamp(4, Timestamp.valueOf(LocalDateTime.now())); // Or use punch.getOriginaltimestamp()
-                ps.setInt(5, punch.getPunchtype().ordinal());
-                
-
-                ps.executeUpdate();
-
-                keys = ps.getGeneratedKeys();
-                if (keys.next()) {
-                    newId = keys.getInt(1);
+                if (empRs.next()) {
+                    departmentId = empRs.getInt("departmentid");
                 }
 
-            } else {
-                System.err.println("Authorization failed: Terminal ID does not match department terminal.");
-                newId = 0; // Unauthorized punch
+                empRs.close();
+                empPs.close();
+
+                DepartmentDAO departmentDAO = new DepartmentDAO(daoFactory);
+                Department department = departmentDAO.find(departmentId);
+
+                int departmentTerminalId = department.getTerminalid();
+                int punchTerminalId = punch.getTerminalid();
+
+                boolean isAuthorized = (punchTerminalId == departmentTerminalId) || (punchTerminalId == 0);
+
+                if (isAuthorized) {
+
+                    ps = conn.prepareStatement(INSERT_PUNCH, Statement.RETURN_GENERATED_KEYS);
+
+                    ps.setInt(1,0);
+                    ps.setInt(2, punchTerminalId);
+                    ps.setString(3, badgeId);
+                    ps.setTimestamp(4, Timestamp.valueOf(punch.getOriginaltimestamp())); // LocalDateTime.now()
+                    ps.setInt(5, punch.getPunchtype().ordinal());
+
+
+                    ps.executeUpdate();
+
+                    keys = ps.getGeneratedKeys();
+                    if (keys.next()) {
+                        newId = keys.getInt(1);
+                    }
+
+                } else {
+                    System.err.println("Authorization failed: Terminal ID does not match department terminal.");
+                    newId = 0; // Unauthorized punch
+                }
             }
+        } catch (SQLException e) {
+            throw new DAOException(e.getMessage());
+        } finally {
+            if (keys != null) try { keys.close(); } catch (SQLException e) { throw new DAOException(e.getMessage()); }
+            if (ps != null) try { ps.close(); } catch (SQLException e) { throw new DAOException(e.getMessage()); }
         }
-
-    } catch (SQLException e) {
-        throw new DAOException(e.getMessage());
-    } finally {
-        if (keys != null) try { keys.close(); } catch (SQLException e) { throw new DAOException(e.getMessage()); }
-        if (ps != null) try { ps.close(); } catch (SQLException e) { throw new DAOException(e.getMessage()); }
-    }
-
-    return newId;
+        
+        return newId;
     }
     
     /**

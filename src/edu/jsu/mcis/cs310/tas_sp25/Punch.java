@@ -9,6 +9,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.ZonedDateTime;
 import java.time.ZoneOffset;
+import java.time.DayOfWeek;  // added for DayOfWeek
 
 /**
  *
@@ -30,8 +31,10 @@ public class Punch {
         this.terminalid = terminalid;
         this.badge = badge;
         this.punchtype = punchtype;
+        this.originaltimestamp = LocalDateTime.now();
         this.id = null;
     }
+    
     public Punch(int id, int terminalid, Badge badge,LocalDateTime originaltimestamp, EventType punchtype){ // for existing punch objects
         this.id = id;  // Fixed: assign the provided id instead of null - WW
         this.terminalid = terminalid;
@@ -81,8 +84,8 @@ public class Punch {
 
         return sb.toString();
     }
-
     
+        
     //toString
     public String toString() {
 
@@ -95,9 +98,7 @@ public class Punch {
         
 
         return sb.toString();
-
+        
     }
-    
-    
     
 }
