@@ -12,8 +12,7 @@ import java.util.HashMap;
  * @author afrix
  */
 public class Shift {
-    
-    
+   
     // declare instance variables
     private final int id;
     private final LocalTime shiftStart;
@@ -22,6 +21,9 @@ public class Shift {
     private final LocalTime lunchStop;
     private final int lunchDuration;
     private final int shiftDuration;
+    private final int roundInterval;
+    private final int gracePeriod;
+    private final int dockPenalty;
 
     // create the constructor
     public Shift(int id, HashMap<String, String> shiftData){
@@ -34,8 +36,21 @@ public class Shift {
         // calculates the length of lunch and shift
         this.lunchDuration = (int) Duration.between(this.lunchStart, this.lunchStop).toMinutes();
         this.shiftDuration = (int) Duration.between(this.shiftStart, this.shiftStop).toMinutes();
+        
+        // Set adjustment parameters with defaults. I dont think using if statements here is correct, but it works - WW
+        if (shiftData.get("roundInterval") != null) {
+            this.roundInterval = Integer.parseInt(shiftData.get("roundInterval"));
+        } else this.roundInterval = 15;
+        
+        if (shiftData.get("gracePeriod") != null) {
+            this.gracePeriod = Integer.parseInt(shiftData.get("gracePeriod"));
+        } else this.gracePeriod = 5;
+        
+        if (shiftData.get("dockPenalty") != null) {
+            this.dockPenalty = Integer.parseInt(shiftData.get("dockPenalty"));
+        } else this.dockPenalty = 15;
     }
-    
+
     // getter methods
     public int getId(){
         return id;
@@ -65,6 +80,19 @@ public class Shift {
         return shiftDuration;
     }
     
+    // Added new getter methods for adjustment parameters - WW
+    public int getRoundInterval(){
+        return roundInterval;
+    }
+    
+    public int getGracePeriod(){
+        return gracePeriod;
+    }
+    
+    public int getDockPenalty(){
+        return dockPenalty;
+    }
+    
     @Override
     public String toString() {
         String shiftLabel;
@@ -88,6 +116,6 @@ public class Shift {
 
         return sb.toString();
     }
-
+    
     
 }
