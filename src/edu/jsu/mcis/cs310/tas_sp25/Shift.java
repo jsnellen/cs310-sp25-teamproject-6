@@ -15,6 +15,7 @@ public class Shift {
    
     // declare instance variables
     private final int id;
+    private final String description;
     private final LocalTime shiftStart;
     private final LocalTime shiftStop;
     private final LocalTime lunchStart;
@@ -24,10 +25,12 @@ public class Shift {
     private final int roundInterval;
     private final int gracePeriod;
     private final int dockPenalty;
+    private final int lunchThreshold;         
 
     // create the constructor
     public Shift(int id, HashMap<String, String> shiftData){
         this.id = id;
+        this.description = shiftData.get("description");
         // converts the shift start/stop, lunch start/stop to LocalTime objects
         this.shiftStart = LocalTime.parse(shiftData.get("shiftStart"));
         this.shiftStop = LocalTime.parse(shiftData.get("shiftStop"));
@@ -49,11 +52,18 @@ public class Shift {
         if (shiftData.get("dockPenalty") != null) {
             this.dockPenalty = Integer.parseInt(shiftData.get("dockPenalty"));
         } else this.dockPenalty = 15;
+
+        this.lunchThreshold = Integer.parseInt(shiftData.get("lunchThreshold"));
+
     }
 
     // getter methods
     public int getId(){
         return id;
+    }
+    
+    public String getDescription() { 
+        return description; 
     }
     
     public LocalTime getShiftStart(){
@@ -93,20 +103,20 @@ public class Shift {
         return dockPenalty;
     }
     
+    public int getLunchThreshold() { 
+        return lunchThreshold; 
+    }
+    
     @Override
     public String toString() {
-        String shiftLabel;
-        if (shiftStart.equals(LocalTime.parse("07:00")) &&
-            shiftStop.equals(LocalTime.parse("15:30")) &&
-            lunchStart.equals(LocalTime.parse("11:30")) &&
-            lunchStop.equals(LocalTime.parse("12:00"))) {
-            shiftLabel = "1 Early Lunch";
-        } else {
-            shiftLabel = String.valueOf(id);
-        }
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("Shift ").append(shiftLabel).append(": ");
+        String label = (description != null && !description.isEmpty())
+                ? description
+                : "Shift " + id;
+
+        StringBuilder sb = new StringBuilder(label);
+        sb.append(": ");  
+
         sb.append(shiftStart).append(" - ");
         sb.append(shiftStop).append(" (");
         sb.append(shiftDuration).append(" minutes); Lunch: ");
@@ -116,6 +126,5 @@ public class Shift {
 
         return sb.toString();
     }
-    
-    
+  
 }
