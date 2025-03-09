@@ -16,16 +16,23 @@ public class Shift {
     
     // declare instance variables
     private final int id;
+    private final String description;
     private final LocalTime shiftStart;
     private final LocalTime shiftStop;
     private final LocalTime lunchStart;
     private final LocalTime lunchStop;
     private final int lunchDuration;
     private final int shiftDuration;
+    // add the previously missing fields
+    private final int roundInterval;         
+    private final int gracePeriod;      
+    private final int dockPenalty; 
+    private final int lunchThreshold;         
 
     // create the constructor
     public Shift(int id, HashMap<String, String> shiftData){
         this.id = id;
+        this.description = shiftData.get("description");
         // converts the shift start/stop, lunch start/stop to LocalTime objects
         this.shiftStart = LocalTime.parse(shiftData.get("shiftStart"));
         this.shiftStop = LocalTime.parse(shiftData.get("shiftStop"));
@@ -34,11 +41,21 @@ public class Shift {
         // calculates the length of lunch and shift
         this.lunchDuration = (int) Duration.between(this.lunchStart, this.lunchStop).toMinutes();
         this.shiftDuration = (int) Duration.between(this.shiftStart, this.shiftStop).toMinutes();
+        
+        this.roundInterval = Integer.parseInt(shiftData.get("roundInterval"));
+        this.gracePeriod = Integer.parseInt(shiftData.get("gracePeriod"));
+        this.dockPenalty = Integer.parseInt(shiftData.get("dockPenalty"));
+        this.lunchThreshold = Integer.parseInt(shiftData.get("lunchThreshold"));
+        
     }
     
     // getter methods
     public int getId(){
         return id;
+    }
+    
+    public String getDescription() { 
+        return description; 
     }
     
     public LocalTime getShiftStart(){
@@ -65,20 +82,29 @@ public class Shift {
         return shiftDuration;
     }
     
+    public int getRoundInterval() { 
+        return roundInterval; 
+    }
+    public int getGracePeriod() { 
+        return gracePeriod; 
+    }
+    public int getDockPenalty() { 
+        return dockPenalty; 
+    }
+    public int getLunchThreshold() { 
+        return lunchThreshold; 
+    }
+    
     @Override
     public String toString() {
-        String shiftLabel;
-        if (shiftStart.equals(LocalTime.parse("07:00")) &&
-            shiftStop.equals(LocalTime.parse("15:30")) &&
-            lunchStart.equals(LocalTime.parse("11:30")) &&
-            lunchStop.equals(LocalTime.parse("12:00"))) {
-            shiftLabel = "1 Early Lunch";
-        } else {
-            shiftLabel = String.valueOf(id);
-        }
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("Shift ").append(shiftLabel).append(": ");
+        String label = (description != null && !description.isEmpty())
+                ? description
+                : "Shift " + id;
+
+        StringBuilder sb = new StringBuilder(label);
+        sb.append(": ");  
+
         sb.append(shiftStart).append(" - ");
         sb.append(shiftStop).append(" (");
         sb.append(shiftDuration).append(" minutes); Lunch: ");
@@ -88,6 +114,7 @@ public class Shift {
 
         return sb.toString();
     }
+
 
     
 }
