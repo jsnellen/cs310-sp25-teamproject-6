@@ -2,6 +2,8 @@ package edu.jsu.mcis.cs310.tas_sp25.dao;
 
 import java.time.*;
 import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.time.temporal.ChronoUnit;
 import java.time.format.DateTimeFormatter;
 import com.github.cliftonlabs.json_simple.*;
@@ -54,7 +56,32 @@ public final class DAOUtility {
         return result;
     }    
     
+/**
+     * Converts a list of Punch objects into a JSON-formatted string.  
+     * Each punch is represented as a HashMap containing relevant details,  
+     * including timestamps, badge ID, terminal ID, punch type, and adjustment type.  
+     *  
+     * Parinita Sedai 03/09/2025  */
+    
+    
+    public static String getPunchListasJSON(ArrayList<Punch> dailypunchlist) {
+        ArrayList<HashMap<String, String>> punchData = new ArrayList<>();
+        
+        for (Punch punch : dailypunchlist) {
+            HashMap<String, String> punchMap = new HashMap<>();
+            
+            punchMap.put("id", String.valueOf(punch.getId()));
+            punchMap.put("badgeid", punch.getBadge().getId());
+            punchMap.put("terminalid", String.valueOf(punch.getTerminalId()));
+            punchMap.put("punchtype", punch.getPunchType().toString());
+            punchMap.put("originaltimestamp", punch.getOriginaltimestamp().format(Punch.TIMESTAMP_FORMAT));
+            punchMap.put("adjustedtimestamp", punch.getAdjustedtimestamp().format(Punch.TIMESTAMP_FORMAT));
+            punchMap.put("adjustmenttype", punch.getAdjustmentType());
 
-
+            punchData.add(punchMap);
+        }
+        
+        return Jsoner.serialize(punchData);     
+    }
 
 }
