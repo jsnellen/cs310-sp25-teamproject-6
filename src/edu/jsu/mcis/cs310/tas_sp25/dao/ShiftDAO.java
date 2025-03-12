@@ -17,6 +17,7 @@ import edu.jsu.mcis.cs310.tas_sp25.dao.DAOException;
 * @author afrix
 */
 
+
 public class ShiftDAO {
 // 
     private static final String QUERY_FIND_BY_ID = "SELECT * FROM shift WHERE id = ?";

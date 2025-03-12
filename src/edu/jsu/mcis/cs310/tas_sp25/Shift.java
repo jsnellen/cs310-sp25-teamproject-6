@@ -13,7 +13,7 @@ import java.util.HashMap;
  */
 public class Shift {
    
-    // declare instance variables
+    // declare instance variables - MF
     private final int id;
     private final String description;
     private final LocalTime shiftStart;
@@ -27,7 +27,7 @@ public class Shift {
     private final int dockPenalty;
     private final int lunchThreshold;         
 
-    // create the constructor
+    // create the constructor - MF
     public Shift(int id, HashMap<String, String> shiftData){
         this.id = id;
         this.description = shiftData.get("description");
@@ -57,7 +57,7 @@ public class Shift {
 
     }
 
-    // getter methods
+    // getter methods - MF
     public int getId(){
         return id;
     }
@@ -107,6 +107,8 @@ public class Shift {
         return lunchThreshold; 
     }
     
+    
+    // MF
     @Override
     public String toString() {
 
