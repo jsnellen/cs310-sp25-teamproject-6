@@ -61,6 +61,11 @@ public class Punch {
     public LocalDateTime getOriginaltimestamp() {
         return originaltimestamp;
     }
+
+    public LocalDateTime getAdjustedtimestamp() {
+        return adjustedtimestamp;
+    }
+    
     public int id(){
         return id;
     }
