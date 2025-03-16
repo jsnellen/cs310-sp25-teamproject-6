@@ -121,5 +121,16 @@ public final class DAOUtility {
         
         return Jsoner.serialize(punchData);     
     }
+    public static BigDecimal calculateAbsenteeism(ArrayList<Punch> punchlist, Shift shift) {
+
+        int totalWorkedMinutes = calculateTotalMinutes(punchlist); 
+        int totalScheduledMinutes = shift.getShiftDuration() * 5; 
+
+        double absenteeism = ((double)(totalScheduledMinutes - totalWorkedMinutes) / totalScheduledMinutes) * 100;
+
+        BigDecimal percentage = BigDecimal.valueOf(absenteeism).setScale(2, RoundingMode.HALF_UP);
+
+        return percentage;
+    }
 
 }
