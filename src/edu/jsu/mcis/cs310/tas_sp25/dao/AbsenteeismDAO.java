@@ -33,6 +33,43 @@ public class AbsenteeismDAO {
         }
        return absentee;
    }
+
+    /*public Absenteeism find(Employee employee, LocalDate payPeriod) {
+        Absenteeism absenteeism = null;
+        try {
+            String query = "SELECT * FROM absenteeism WHERE employeeid = ? AND payperiod = ?";
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setInt(1, employee.getId());
+            stmt.setDate(2, Date.valueOf(payPeriod));
+
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                BigDecimal percentage = BigDecimal.valueOf(rs.getDouble("percentage"));
+                absenteeism = new Absenteeism(employee, payPeriod, percentage);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return absenteeism;
+    }*/
+
+    // Create method
+    public void create(Absenteeism absenteeism) {
+        try {
+            String query = "REPLACE INTO absenteeism (employeeid, payperiod, percentage) VALUES (?, ?, ?)";
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setInt(1, absenteeism.getEmployee().getId());
+            stmt.setDate(2, Date.valueOf(absenteeism.getPayPeriod()));
+            stmt.setDouble(3, absenteeism.getPercentage().doubleValue());
+
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
     
     
 }
