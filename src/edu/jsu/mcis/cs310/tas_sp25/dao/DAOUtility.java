@@ -11,7 +11,8 @@ import com.github.cliftonlabs.json_simple.*;
 import edu.jsu.mcis.cs310.tas_sp25.Punch; // imports Punch for DAT method
 import edu.jsu.mcis.cs310.tas_sp25.Shift; // imports Shift for DAT method
 import java.sql.Connection;
-
+import java.math.BigDecimal; // imported BigDecimal for calculateAbsenteeism method - nll
+import java.math.RoundingMode; // imported RoundingMode for calculateAbsenteeism method - nll
 /**
  * 
  * Utility class for DAOs.  This is a final, non-constructable class containing
@@ -123,7 +124,7 @@ public final class DAOUtility {
     }
     public static BigDecimal calculateAbsenteeism(ArrayList<Punch> punchlist, Shift shift) {
 
-        int totalWorkedMinutes = calculateTotalMinutes(punchlist); 
+        int totalWorkedMinutes = calculateTotalMinutes(punchlist,shift); // Added shift argument- nll
         int totalScheduledMinutes = shift.getShiftDuration() * 5; 
 
         double absenteeism = ((double)(totalScheduledMinutes - totalWorkedMinutes) / totalScheduledMinutes) * 100;

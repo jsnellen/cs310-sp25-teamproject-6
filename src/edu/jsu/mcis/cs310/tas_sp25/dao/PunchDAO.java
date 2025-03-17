@@ -265,7 +265,7 @@ public class PunchDAO {
     
     // Adding List method for punches from a range of Dates
     
-    public ArrayList <Punch> entries (Badge badge, LocalDate begin, LocalDate end) {
+    public ArrayList <Punch> list (Badge badge, LocalDate begin, LocalDate end) { // changed "entries" to "list" to match with test 
         ArrayList <Punch> resultEntries = new ArrayList ();
         LocalDate date = begin;
         

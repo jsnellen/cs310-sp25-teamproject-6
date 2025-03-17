@@ -45,7 +45,7 @@ public class Absenteeism {
     @Override
     public String toString() {
 
-                StringBuilder s = new StringBuilder();
+        StringBuilder s = new StringBuilder();
 
         s.append('#').append(employee).append(' ');
         s.append('(').append("Pay Period Starting").append(startDateofPayPeriod).append(')');

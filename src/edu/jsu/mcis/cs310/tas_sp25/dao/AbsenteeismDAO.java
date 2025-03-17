@@ -57,11 +57,13 @@ public class AbsenteeismDAO {
 
     // Create method
     public void create(Absenteeism absenteeism) {
+        Connection conn = daoFactory.getConnection(); // Revise code and added connection- nll
+
         try {
             String query = "REPLACE INTO absenteeism (employeeid, payperiod, percentage) VALUES (?, ?, ?)";
             PreparedStatement stmt = conn.prepareStatement(query);
             stmt.setInt(1, absenteeism.getEmployee().getId());
-            stmt.setDate(2, Date.valueOf(absenteeism.getPayPeriod()));
+            stmt.setDate(2, Date.valueOf(absenteeism.getStartDateofPayPeriod())); // Corrected to proper get method
             stmt.setDouble(3, absenteeism.getPercentage().doubleValue());
 
             stmt.executeUpdate();
