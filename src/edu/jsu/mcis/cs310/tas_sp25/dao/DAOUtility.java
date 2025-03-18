@@ -103,19 +103,19 @@ public final class DAOUtility {
      * Parinita Sedai 03/09/2025  */
     
     
-    public static String getPunchListasJSON(ArrayList<Punch> dailypunchlist) {
+    public static String getPunchListAsJSON(ArrayList<Punch> dailypunchlist) {
         ArrayList<HashMap<String, String>> punchData = new ArrayList<>();
         
         for (Punch punch : dailypunchlist) {
             HashMap<String, String> punchMap = new HashMap<>();
             
-            punchMap.put("id", String.valueOf(punch.getId()));
+            punchMap.put("id", String.valueOf(punch.id()));
             punchMap.put("badgeid", punch.getBadge().getId());
-            punchMap.put("terminalid", String.valueOf(punch.getTerminalId()));
-            punchMap.put("punchtype", punch.getPunchType().toString());
-            punchMap.put("originaltimestamp", punch.getOriginaltimestamp().format(Punch.TIMESTAMP_FORMAT));
-            punchMap.put("adjustedtimestamp", punch.getAdjustedtimestamp().format(Punch.TIMESTAMP_FORMAT));
-            punchMap.put("adjustmenttype", punch.getAdjustmentType());
+            punchMap.put("terminalid", String.valueOf(punch.getTerminalid()));
+            punchMap.put("punchtype", punch.getPunchtype().toString());
+            punchMap.put("originaltimestamp", punch.getOriginaltimestamp().format(Punch.TIMESTAMP_FORMAT).toUpperCase());
+            punchMap.put("adjustedtimestamp", punch.getAdjustedtimestamp().format(Punch.TIMESTAMP_FORMAT).toUpperCase());
+            punchMap.put("adjustmenttype", punch.getAdjustmentType().toString());
 
             punchData.add(punchMap);
         }

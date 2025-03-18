@@ -27,6 +27,8 @@ public class Punch {
     private LocalDateTime originaltimestamp = null;
     private LocalDateTime adjustedtimestamp = null;
     
+    public static final DateTimeFormatter TIMESTAMP_FORMAT = DateTimeFormatter.ofPattern("EEE MM/dd/yyyy HH:mm:ss");
+
     // Constructor
     public Punch(int terminalid, Badge badge, EventType punchtype){ // for new punch objects
         this.terminalid = terminalid;
@@ -66,17 +68,18 @@ public class Punch {
         return adjustedtimestamp;
     }
     
+    public PunchAdjustmentType getAdjustmentType(){
+        return adjustmentType;
+    }
+    
     public int id(){
         return id;
     }
     
     // created this printOriginal method -ww
     public String printOriginal() {
-        // Define date-time format "SUN 2/23/2025 05:26:07"
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE MM/dd/yyyy HH:mm:ss");
-
         // Convert the entire string to uppercase
-        String formattedTimestamp = originaltimestamp.format(formatter).toUpperCase();
+        String formattedTimestamp = originaltimestamp.format(TIMESTAMP_FORMAT).toUpperCase();
 
         // Get the EventType string representation
         String eventDescription = punchtype.toString();
@@ -90,12 +93,9 @@ public class Punch {
         return sb.toString();
     }
     
-    public String printAdjusted() {
-        // Define date-time format "SUN 2/23/2025 05:26:07"
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE MM/dd/yyyy HH:mm:ss");
-        
+    public String printAdjusted() {   
         // Convert the entire string to uppercase
-        String formattedTimestamp = adjustedtimestamp.format(formatter).toUpperCase();
+        String formattedTimestamp = adjustedtimestamp.format(TIMESTAMP_FORMAT).toUpperCase();
         
         // Build the string
         StringBuilder sb = new StringBuilder();
