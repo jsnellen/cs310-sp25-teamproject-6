@@ -40,19 +40,9 @@ public class Shift {
         this.lunchDuration = (int) Duration.between(this.lunchStart, this.lunchStop).toMinutes();
         this.shiftDuration = (int) Duration.between(this.shiftStart, this.shiftStop).toMinutes();
         
-        // Set adjustment parameters with defaults. I dont think using if statements here is correct, but it works - WW
-        if (shiftData.get("roundInterval") != null) {
-            this.roundInterval = Integer.parseInt(shiftData.get("roundInterval"));
-        } else this.roundInterval = 15;
-        
-        if (shiftData.get("gracePeriod") != null) {
-            this.gracePeriod = Integer.parseInt(shiftData.get("gracePeriod"));
-        } else this.gracePeriod = 5;
-        
-        if (shiftData.get("dockPenalty") != null) {
-            this.dockPenalty = Integer.parseInt(shiftData.get("dockPenalty"));
-        } else this.dockPenalty = 15;
-
+        this.roundInterval = Integer.parseInt(shiftData.get("roundInterval"));
+        this.gracePeriod = Integer.parseInt(shiftData.get("gracePeriod"));
+        this.dockPenalty = Integer.parseInt(shiftData.get("dockPenalty"));
         this.lunchThreshold = Integer.parseInt(shiftData.get("lunchThreshold"));
 
     }
