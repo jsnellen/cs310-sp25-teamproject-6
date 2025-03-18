@@ -6,6 +6,8 @@ package edu.jsu.mcis.cs310.tas_sp25;
 import java.math.BigDecimal; // Imported for BigDecimal var - NLL
 import java.time.LocalDate; // Imports for LocalDate variable - NLL
 import java.time.format.DateTimeFormatter; //Imported to change format of payPeriod to requirements of test 
+import java.time.DayOfWeek;
+import java.time.temporal.TemporalAdjusters;
 
 
 /**
@@ -25,7 +27,9 @@ public class Absenteeism {
 
     public Absenteeism(Employee employee, LocalDate payPeriod, BigDecimal percentage ) {
     this.employee = employee;
-    this.payPeriod = payPeriod;
+    // this.payPeriod = payPeriod;
+    // adjusts the provided date to the start of the pay period, to the previous or same sunday
+    this.payPeriod = payPeriod.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
     this.percentage = percentage;
     }
         
