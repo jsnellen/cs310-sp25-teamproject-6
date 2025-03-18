@@ -20,9 +20,8 @@ import edu.jsu.mcis.cs310.tas_sp25.dao.DAOException;
 
 public class ShiftDAO {
 // 
-    private static final String QUERY_FIND_BY_ID = "SELECT * FROM shift WHERE id = ?";
-
-    private static final String QUERY_FIND_BY_BADGE = "SELECT shiftid FROM employee WHERE badgeid = ?";
+    private static final String QUERY_FIND_BY_ID     = "SELECT * FROM shift WHERE id = ?";
+    private static final String QUERY_FIND_BY_BADGE  = "SELECT shiftid FROM employee WHERE badgeid = ?";
 
     private final DAOFactory daoFactory;
 

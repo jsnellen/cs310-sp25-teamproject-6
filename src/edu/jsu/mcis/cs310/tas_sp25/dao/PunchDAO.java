@@ -21,13 +21,12 @@ import edu.jsu.mcis.cs310.tas_sp25.Badge;
  * completed find method, Weston Wyatt 2/23/2025
  */
 public class PunchDAO {
-    // private static final String QUERY_FIND = "SELECT * FROM badge WHERE terminalid = ?";
-    // fixed query to use event and id 
-    private static final String QUERY_FIND = "SELECT * FROM event WHERE id = ?";
     private final DAOFactory daoFactory;
-    private static final String QUERY_LIST = "SELECT * FROM event WHERE badgeid = ? AND DATE(timestamp) = ? ORDER BY timestamp";
-    private final String INSERT_PUNCH = "INSERT INTO event (id, terminalid, badgeid, timestamp, eventtypeid) "
-             + "VALUES (?,?,?,?,?)"; 
+    
+    private static final String QUERY_FIND      = "SELECT * FROM event WHERE id = ?";
+    private static final String QUERY_LIST      = "SELECT * FROM event WHERE badgeid = ? AND DATE(timestamp) = ? ORDER BY timestamp";
+    private static final String QUERY_CREATE    = "SELECT departmentid FROM employee WHERE badgeid = ?";
+    private static final String INSERT_PUNCH    = "INSERT INTO event (id, terminalid, badgeid, timestamp, eventtypeid) VALUES (?,?,?,?,?)"; 
      
     PunchDAO(DAOFactory daoFactory)
     { 
@@ -120,7 +119,7 @@ public class PunchDAO {
                 Badge badge = punch.getBadge();
                 String badgeId = badge.getId();
 
-                PreparedStatement empPs = conn.prepareStatement("SELECT departmentid FROM employee WHERE badgeid = ?");
+                PreparedStatement empPs = conn.prepareStatement(QUERY_CREATE);
                 empPs.setString(1, badgeId);
 
                 ResultSet empRs = empPs.executeQuery();

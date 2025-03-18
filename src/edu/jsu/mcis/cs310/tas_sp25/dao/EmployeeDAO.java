@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
  */
 public class EmployeeDAO {
     
-    private static final String QUERY_FIND = "SELECT * FROM employee WHERE id = ?";
+    private static final String QUERY_FIND          = "SELECT * FROM employee WHERE id = ?";
     private static final String QUERY_FIND_BY_BADGE = "SELECT * FROM employee WHERE badgeid = ?";
 
     private final DAOFactory daoFactory;

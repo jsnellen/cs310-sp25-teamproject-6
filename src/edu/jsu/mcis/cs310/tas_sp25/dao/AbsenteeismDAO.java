@@ -13,9 +13,14 @@ import java.math.BigDecimal; // Imported for percentage
  * @author afrix
  *  assisting, NLL 3-13-2025
  */
+
+
 public class AbsenteeismDAO {
     
     private final DAOFactory daoFactory;
+    
+    private static final String QUERY_FIND      = "SELECT * FROM absenteeism WHERE employeeid = ? AND payperiod = ?";
+    private static final String QUERY_CREATE    = "REPLACE INTO absenteeism (employeeid, payperiod, percentage) VALUES (?, ?, ?)";
 
     AbsenteeismDAO(DAOFactory daoFactory){
         this.daoFactory = daoFactory;
@@ -40,8 +45,8 @@ public class AbsenteeismDAO {
         Connection conn = daoFactory.getConnection();
 
         try {
-            String query = "SELECT * FROM absenteeism WHERE employeeid = ? AND payperiod = ?";
-            PreparedStatement stmt = conn.prepareStatement(query);
+            //QUERY_FIND is "SELECT * FROM absenteeism WHERE employeeid = ? AND payperiod = ?";
+            PreparedStatement stmt = conn.prepareStatement(QUERY_FIND);
             stmt.setInt(1, employee.getId());
             stmt.setDate(2, Date.valueOf(payPeriod));
 
@@ -63,8 +68,8 @@ public class AbsenteeismDAO {
         Connection conn = daoFactory.getConnection(); // Revise code and added connection- nll
 
         try {
-            String query = "REPLACE INTO absenteeism (employeeid, payperiod, percentage) VALUES (?, ?, ?)";
-            PreparedStatement stmt = conn.prepareStatement(query);
+            //QUERY_CREATE is "REPLACE INTO absenteeism (employeeid, payperiod, percentage) VALUES (?, ?, ?)";
+            PreparedStatement stmt = conn.prepareStatement(QUERY_CREATE);
             stmt.setInt(1, absenteeism.getEmployee().getId());
             stmt.setDate(2, Date.valueOf(absenteeism.getPayPeriod())); 
             stmt.setDouble(3, absenteeism.getPercentage().doubleValue());
