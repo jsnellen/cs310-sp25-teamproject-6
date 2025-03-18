@@ -6,6 +6,7 @@ package edu.jsu.mcis.cs310.tas_sp25.dao;
 import java.sql.*;
 import edu.jsu.mcis.cs310.tas_sp25.*; // import class needed
 import java.time.LocalDate;
+import java.math.BigDecimal; // Imported for percentage
 
 /**
  *
@@ -21,7 +22,7 @@ public class AbsenteeismDAO {
     }
   
     // FIND METHOD- NLL
-   public Absenteeism find( Employee employee, LocalDate localDate){
+   /*public Absenteeism find( Employee employee, LocalDate localDate){
        Absenteeism absentee = null;
        // Gets Employee object  and localdate object  from absenteeism class and make sure it is the same as the argument in find method
        try{
@@ -32,10 +33,12 @@ public class AbsenteeismDAO {
             throw new DAOException(e.getMessage());
         }
        return absentee;
-   }
+   }*/
 
-    /*public Absenteeism find(Employee employee, LocalDate payPeriod) {
+    public Absenteeism find(Employee employee, LocalDate payPeriod) {
         Absenteeism absenteeism = null;
+        Connection conn = daoFactory.getConnection();
+
         try {
             String query = "SELECT * FROM absenteeism WHERE employeeid = ? AND payperiod = ?";
             PreparedStatement stmt = conn.prepareStatement(query);
@@ -53,7 +56,7 @@ public class AbsenteeismDAO {
             e.printStackTrace();
         }
         return absenteeism;
-    }*/
+    }
 
     // Create method
     public void create(Absenteeism absenteeism) {
@@ -63,7 +66,7 @@ public class AbsenteeismDAO {
             String query = "REPLACE INTO absenteeism (employeeid, payperiod, percentage) VALUES (?, ?, ?)";
             PreparedStatement stmt = conn.prepareStatement(query);
             stmt.setInt(1, absenteeism.getEmployee().getId());
-            stmt.setDate(2, Date.valueOf(absenteeism.getStartDateofPayPeriod())); // Corrected to proper get method
+            stmt.setDate(2, Date.valueOf(absenteeism.getPayPeriod())); 
             stmt.setDouble(3, absenteeism.getPercentage().doubleValue());
 
             stmt.executeUpdate();
