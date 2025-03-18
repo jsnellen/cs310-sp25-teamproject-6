@@ -20,7 +20,7 @@ import edu.jsu.mcis.cs310.tas_sp25.Badge;
  * @Creating DAO for punch, Nehemias Loarca Lucas 2-21-2025
  * completed find method, Weston Wyatt 2/23/2025
  */
-public class PunchDAO {
+public class PunchDAO {    
     private final DAOFactory daoFactory;
     
     private static final String QUERY_FIND      = "SELECT * FROM event WHERE id = ?";
@@ -148,7 +148,7 @@ public class PunchDAO {
                     ps.setInt(1,0);
                     ps.setInt(2, punchTerminalId);
                     ps.setString(3, badgeId);
-                    ps.setTimestamp(4, Timestamp.valueOf(punch.getOriginaltimestamp())); // LocalDateTime.now()
+                    ps.setTimestamp(4, Timestamp.valueOf(LocalDateTime.now())); // LocalDateTime.now() punch.getOriginaltimestamp()
                     ps.setInt(5, punch.getPunchtype().ordinal());
 
 
