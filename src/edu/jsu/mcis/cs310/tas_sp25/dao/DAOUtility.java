@@ -6,6 +6,7 @@ import java.util.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAdjusters;
 import java.time.format.DateTimeFormatter;
 import com.github.cliftonlabs.json_simple.*;
 import edu.jsu.mcis.cs310.tas_sp25.Punch; // imports Punch for DAT method
@@ -123,14 +124,43 @@ public final class DAOUtility {
         return Jsoner.serialize(punchData);     
     }
     public static BigDecimal calculateAbsenteeism(ArrayList<Punch> punchlist, Shift shift) {
+        // Determine the pay period (which Sunday to) start from one of the punches
+        LocalDate sampleDate = punchlist.get(0).getOriginaltimestamp().toLocalDate();
+        LocalDate payPeriodStart = sampleDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
 
-        int totalWorkedMinutes = calculateTotalMinutes(punchlist,shift); // Added shift argument- nll
+        List<LocalDate> scheduledDays = new ArrayList<>();
+        // Monday through Friday (days 1 through 5)
+        for (int i = 1; i <= 5; i++) {
+            scheduledDays.add(payPeriodStart.plusDays(i));
+        }
+
+        // https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html
+        
+        // Group punches by date
+        Map<LocalDate, ArrayList<Punch>> punchesByDate = new HashMap<>();
+        for (Punch punch : punchlist) {
+            LocalDate date = punch.getOriginaltimestamp().toLocalDate();
+            punchesByDate.computeIfAbsent(date, k -> new ArrayList<>()).add(punch);
+        }
+        
+        // int totalWorkedMinutes = calculateTotalMinutes(punchlist,shift); // Added shift argument- nll
+        
+        int totalWorkedMinutes = 0;
+        // For each scheduled workday:
+        for (LocalDate day : scheduledDays) {
+            // If punches exist for that day, compute worked minutes
+            if (punchesByDate.containsKey(day)) {
+                ArrayList<Punch> dayPunches = punchesByDate.get(day);
+                totalWorkedMinutes += calculateTotalMinutes(dayPunches, shift); // Added shift argument- nll
+            }
+        }
+        
         int totalScheduledMinutes = shift.getShiftDuration() * 5; 
-
+        
         double absenteeism = ((double)(totalScheduledMinutes - totalWorkedMinutes) / totalScheduledMinutes) * 100;
-
+        
         BigDecimal percentage = BigDecimal.valueOf(absenteeism).setScale(2, RoundingMode.HALF_UP);
-
+        
         return percentage;
     }
 

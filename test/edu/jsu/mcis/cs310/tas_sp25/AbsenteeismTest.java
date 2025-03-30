@@ -48,13 +48,20 @@ public class AbsenteeismTest {
         
         /* Adjust Punch List */
         
+        // temparay debugging - WW
+        //System.out.println("Shift scheduled minutes per day: " + s.getShiftDuration());
+        //System.out.println("Punches for week:");
+
         for (Punch punch : punchlist) {
             punch.adjust(s);
+            //System.out.println(punch.printAdjusted());
         }
         
         /* Compute Pay Period Total Absenteeism */
         
         BigDecimal percentage = DAOUtility.calculateAbsenteeism(punchlist, s);
+        
+        //System.out.println("Calculated absenteeism: " + percentage);
         
         /* Insert Absenteeism Into Database */
         
