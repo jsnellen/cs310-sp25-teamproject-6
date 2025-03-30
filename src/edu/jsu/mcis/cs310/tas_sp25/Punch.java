@@ -169,7 +169,7 @@ public class Punch {
                 return;
             }
             // Dock penalty: if the punch is later than the grace period but before shiftStart + dock.
-            if (original.isBefore(shiftStartTime.plusMinutes(dock))) {
+            if (original.isAfter(shiftStartTime.plusMinutes(grace)) && original.isBefore(shiftStartTime.plusMinutes(dock))) {
                 setAdjustment(shiftStartTime.plusMinutes(dock), PunchAdjustmentType.SHIFT_DOCK);
                 return;
             }
@@ -214,7 +214,7 @@ public class Punch {
                     return;
                 }
                 // Or if within the dock penalty window, adjust to shift stop - dock
-                if (!original.isBefore(shiftStopTime.minusMinutes(dock))) {
+                if (original.isBefore(shiftStopTime.minusMinutes(grace)) && original.isAfter(shiftStopTime.minusMinutes(dock))) {
                     setAdjustment(shiftStopTime.minusMinutes(dock), PunchAdjustmentType.SHIFT_DOCK);
                     return;
                 }

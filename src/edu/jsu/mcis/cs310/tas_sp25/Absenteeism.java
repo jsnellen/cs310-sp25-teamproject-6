@@ -8,6 +8,7 @@ import java.time.LocalDate; // Imports for LocalDate variable - NLL
 import java.time.format.DateTimeFormatter; //Imported to change format of payPeriod to requirements of test 
 import java.time.DayOfWeek;
 import java.time.temporal.TemporalAdjusters;
+import java.text.DecimalFormat;
 
 
 /**
@@ -53,10 +54,13 @@ public class Absenteeism {
         StringBuilder s = new StringBuilder();
         
         String payPeriodformat = (payPeriod != null) ? payPeriod.format(DateTimeFormatter.ofPattern("MM-dd-yyyy")) : "null"; // Reference from Employee class
+        
+        DecimalFormat df = new DecimalFormat("0.00");
+        String formattedPercentage = df.format(percentage);
        
         s.append('#').append(employee.getBadge().getId()).append(' ');
         s.append('(').append("Pay Period Starting ").append(payPeriodformat).append(')');
-        s.append(':').append(percentage).append("%");
+        s.append(": ").append(formattedPercentage).append("%");
 
         return s.toString();
     }
