@@ -49,19 +49,20 @@ public class AbsenteeismTest {
         /* Adjust Punch List */
         
         // temparay debugging - WW
-        //System.out.println("Shift scheduled minutes per day: " + s.getShiftDuration());
-        //System.out.println("Punches for week:");
+        System.out.println("Shift scheduled minutes per day: " + s.getShiftDuration());
+        System.out.println("Punches for week:");
 
         for (Punch punch : punchlist) {
             punch.adjust(s);
-            //System.out.println(punch.printAdjusted());
+            System.out.println(punch.printAdjusted());
         }
         
         /* Compute Pay Period Total Absenteeism */
         
         BigDecimal percentage = DAOUtility.calculateAbsenteeism(punchlist, s);
         
-        //System.out.println("Calculated absenteeism: " + percentage);
+        System.out.println("Calculated absenteeism: " + percentage);
+        System.out.println("Expected absenteeism: 2.50");
         
         /* Insert Absenteeism Into Database */
         
@@ -102,14 +103,20 @@ public class AbsenteeismTest {
         
         /* Adjust Punch List */
         
+        System.out.println("Shift scheduled minutes per day: " + s.getShiftDuration());
+        System.out.println("Punches for week:");
+
         for (Punch punch : punchlist) {
             punch.adjust(s);
+            System.out.println(punch.printAdjusted());
         }
         
         /* Compute Pay Period Total Absenteeism */
         
         BigDecimal percentage = DAOUtility.calculateAbsenteeism(punchlist, s);
         
+        System.out.println("Calculated absenteeism: " + percentage);
+        System.out.println("Expected absenteeism: -20.00");
         /* Insert Absenteeism Into Database */
         
         Absenteeism a1 = new Absenteeism(e, ts, percentage);
@@ -151,14 +158,20 @@ public class AbsenteeismTest {
         
         /* Adjust Punch List */
         
+        System.out.println("Shift scheduled minutes per day: " + s.getShiftDuration());
+        System.out.println("Punches for week:");
+
         for (Punch punch : punchlist) {
             punch.adjust(s);
-            //System.err.println(punch.printAdjusted());
+            System.out.println(punch.printAdjusted());
         }
         
         /* Compute Pay Period Total Absenteeism */
         
         BigDecimal percentage = DAOUtility.calculateAbsenteeism(punchlist, s);
+        
+        System.out.println("Calculated absenteeism: " + percentage);
+        System.out.println("Expected absenteeism: -28.75");
         
         /* Insert Absenteeism Into Database */
         
