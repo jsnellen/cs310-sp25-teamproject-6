@@ -10,7 +10,7 @@ import java.sql.*;
  * <p>Instances of this class should be obtained through
  * {@link DAOFactory#getBadgeDAO() DAOFactory.getBadgeDAO()}.</p>
  *
- * @author Michael Frix
+ * @author Mr. Snellen
  */
 public class BadgeDAO {
     

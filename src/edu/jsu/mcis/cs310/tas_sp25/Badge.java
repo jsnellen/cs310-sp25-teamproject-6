@@ -5,7 +5,7 @@ package edu.jsu.mcis.cs310.tas_sp25;
  * application. Each Badge is identified by an ID and a short
  * description.</p>
  *
- * @author Michael Frix
+ * @author Mr. Snellen
  */
 
 public class Badge {
