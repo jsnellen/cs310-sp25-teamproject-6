@@ -167,9 +167,10 @@ public final class DAOUtility {
     */
     
     public static BigDecimal calculateAbsenteeism(ArrayList<Punch> punchlist, Shift shift) {
+        /*
         LocalDate sampleDate = punchlist.get(0).getAdjustedtimestamp().toLocalDate();
         LocalDate payPeriodStart = sampleDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
-        /*
+        
         List<LocalDate> scheduledDays = new ArrayList<>();
         // Monday through Friday (days 1 through 5)
         for (int i = 1; i <= 5; i++) {
