@@ -97,6 +97,34 @@ public final class DAOUtility {
         return result;
     }  
 
+    public static int calculateTotalWorkedMinutesInPayPeriod(ArrayList<Punch> punchlist, Shift shift) {
+        LocalDate sampleDate = punchlist.get(0).getAdjustedtimestamp().toLocalDate();
+        LocalDate payPeriodStart = sampleDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
+
+        // Group punches by date
+        Map<LocalDate, ArrayList<Punch>> punchesByDate = new HashMap<>();
+        for (Punch punch : punchlist) {
+            LocalDate date = punch.getAdjustedtimestamp().toLocalDate();
+            punchesByDate.computeIfAbsent(date, k -> new ArrayList<>()).add(punch);
+        }
+
+        int totalWorkedMinutes = 0;
+        for (int i = 1; i <= 5; i++) {
+            LocalDate day = payPeriodStart.plusDays(i);
+            if (punchesByDate.containsKey(day)) {
+                ArrayList<Punch> dayPunches = punchesByDate.get(day);
+                totalWorkedMinutes += calculateTotalMinutes(dayPunches, shift); // Added shift argument- nll
+            }
+        }
+
+        LocalDate saturday = payPeriodStart.plusDays(6);
+        if (punchesByDate.containsKey(saturday)) {
+            ArrayList<Punch> dayPunches = punchesByDate.get(saturday);
+            totalWorkedMinutes += calculateTotalMinutes(dayPunches, shift); // Added shift argument- nll
+        }
+
+        return totalWorkedMinutes;
+    }
 /**
      * Converts a list of Punch objects into a JSON-formatted string.  
      * Each punch is represented as a HashMap containing relevant details,  
@@ -125,6 +153,19 @@ public final class DAOUtility {
         return Jsoner.serialize(punchData);     
     }
     
+    /*
+    public static String getPunchListPlusTotalsAsJSON(ArrayList<Punch> punchlist, Shift shift) {
+        ArrayList<HashMap<String, String>> punchData = new ArrayList<>();
+        int totalMinutes = calculateTotalWorkedMinutesInPayPeriod(punchlist, shift);
+        BigDecimal absenteeismPercentage = calculateAbsenteeism(punchlist, shift);
+        
+        
+        String jsonString = Jsoner.serialize(json);
+        
+        return jsonString;
+    }
+    */
+    
     public static BigDecimal calculateAbsenteeism(ArrayList<Punch> punchlist, Shift shift) {
         LocalDate sampleDate = punchlist.get(0).getAdjustedtimestamp().toLocalDate();
         LocalDate payPeriodStart = sampleDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
@@ -143,25 +184,9 @@ public final class DAOUtility {
             LocalDate date = punch.getAdjustedtimestamp().toLocalDate();
             punchesByDate.computeIfAbsent(date, k -> new ArrayList<>()).add(punch);
         }
-
-        // int totalWorkedMinutes = calculateTotalMinutes(punchlist,shift); // Added shift argument- nll
         
-        int totalWorkedMinutes = 0;
-        // For each scheduled workday:
-        for (LocalDate day : scheduledDays) {
-            // If punches exist for that day, compute worked minutes
-            if (punchesByDate.containsKey(day)) {
-                ArrayList<Punch> dayPunches = punchesByDate.get(day);
-                totalWorkedMinutes += calculateTotalMinutes(dayPunches, shift); // Added shift argument- nll
-            }
-        }
-
-        LocalDate saturday = payPeriodStart.plusDays(6);
-        if (punchesByDate.containsKey(saturday)) {
-            ArrayList<Punch> dayPunches = punchesByDate.get(saturday);
-            totalWorkedMinutes += calculateTotalMinutes(dayPunches, shift); // Added shift argument- nll
-        }
-
+        int totalWorkedMinutes = calculateTotalWorkedMinutesInPayPeriod(punchlist, shift);
+        
         //  ( 510 - 30 ) * 5
         int totalScheduledMinutes =  (shift.getShiftDuration() - shift.getLunchDuration()) * scheduledDays.size();
 
@@ -171,6 +196,6 @@ public final class DAOUtility {
         return percentage;
     }
     
-   
+    
 
 }
