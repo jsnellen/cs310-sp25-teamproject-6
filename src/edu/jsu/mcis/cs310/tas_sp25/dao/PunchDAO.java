@@ -150,7 +150,7 @@ public class PunchDAO {
                     ps.setString(3, badgeId);
                     // this is off by 1 second randomly, sometimes it is correct sometimes its not
                     // Using either Timestamp.valueOf(LocalDateTime.now() or punch.getOriginaltimestamp() the issue is still there
-                    ps.setTimestamp(4, Timestamp.valueOf(LocalDateTime.now())); // LocalDateTime.now() punch.getOriginaltimestamp()
+                    ps.setTimestamp(4, Timestamp.valueOf(punch.getOriginaltimestamp())); // LocalDateTime.now() punch.getOriginaltimestamp()
                     ps.setInt(5, punch.getPunchtype().ordinal());
 
 
