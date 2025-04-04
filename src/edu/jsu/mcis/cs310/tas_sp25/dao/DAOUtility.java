@@ -169,7 +169,7 @@ public final class DAOUtility {
     public static BigDecimal calculateAbsenteeism(ArrayList<Punch> punchlist, Shift shift) {
         LocalDate sampleDate = punchlist.get(0).getAdjustedtimestamp().toLocalDate();
         LocalDate payPeriodStart = sampleDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
-
+        /*
         List<LocalDate> scheduledDays = new ArrayList<>();
         // Monday through Friday (days 1 through 5)
         for (int i = 1; i <= 5; i++) {
@@ -184,11 +184,12 @@ public final class DAOUtility {
             LocalDate date = punch.getAdjustedtimestamp().toLocalDate();
             punchesByDate.computeIfAbsent(date, k -> new ArrayList<>()).add(punch);
         }
+        */
         
         int totalWorkedMinutes = calculateTotalWorkedMinutesInPayPeriod(punchlist, shift);
         
         //  ( 510 - 30 ) * 5
-        int totalScheduledMinutes =  (shift.getShiftDuration() - shift.getLunchDuration()) * scheduledDays.size();
+        int totalScheduledMinutes =  (shift.getShiftDuration() - shift.getLunchDuration()) * 5;
 
         double absenteeism = ((double)(totalScheduledMinutes - totalWorkedMinutes) / totalScheduledMinutes) * 100;
         BigDecimal percentage = BigDecimal.valueOf(absenteeism).setScale(2, RoundingMode.HALF_UP);
