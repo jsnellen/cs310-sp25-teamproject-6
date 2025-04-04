@@ -214,7 +214,7 @@ public class Punch {
                     return;
                 }
                 // Or if within the dock penalty window, adjust to shift stop - dock
-                if (original.isBefore(shiftStopTime.minusMinutes(grace)) && original.isAfter(shiftStopTime.minusMinutes(dock))) {
+                if (original.isBefore(shiftStopTime.minusMinutes(grace)) && !original.isBefore(shiftStopTime.minusMinutes(dock))) {
                     setAdjustment(shiftStopTime.minusMinutes(dock), PunchAdjustmentType.SHIFT_DOCK);
                     return;
                 }
