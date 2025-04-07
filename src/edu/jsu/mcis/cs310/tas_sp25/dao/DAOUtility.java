@@ -5,16 +5,12 @@ import java.time.*;
 import java.util.*;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
-import java.time.format.DateTimeFormatter;
 import com.github.cliftonlabs.json_simple.*;
 import edu.jsu.mcis.cs310.tas_sp25.Punch; // imports Punch for DAT method
 import edu.jsu.mcis.cs310.tas_sp25.Shift; // imports Shift for DAT method
-import java.sql.Connection;
 import java.math.BigDecimal; // imported BigDecimal for calculateAbsenteeism method - nll
 import java.math.RoundingMode; // imported RoundingMode for calculateAbsenteeism method - nll
-import java.text.DecimalFormat;
 /**
  * 
  * Utility class for DAOs.  This is a final, non-constructable class containing
@@ -100,6 +96,7 @@ public final class DAOUtility {
     public static int calculateTotalWorkedMinutesInPayPeriod(ArrayList<Punch> punchlist, Shift shift) {
         LocalDate sampleDate = punchlist.get(0).getAdjustedtimestamp().toLocalDate();
         LocalDate payPeriodStart = sampleDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
+        LocalDate payPeriodEnd = sampleDate.with(TemporalAdjusters.next(DayOfWeek.SATURDAY));
 
         // Group punches by date
         Map<LocalDate, ArrayList<Punch>> punchesByDate = new HashMap<>();
@@ -109,20 +106,12 @@ public final class DAOUtility {
         }
 
         int totalWorkedMinutes = 0;
-        for (int i = 1; i <= 5; i++) {
-            LocalDate day = payPeriodStart.plusDays(i);
+        for (LocalDate day = payPeriodStart; !day.isAfter(payPeriodEnd); day = day.plusDays(1)) {
             if (punchesByDate.containsKey(day)) {
                 ArrayList<Punch> dayPunches = punchesByDate.get(day);
                 totalWorkedMinutes += calculateTotalMinutes(dayPunches, shift); // Added shift argument- nll
             }
         }
-
-        LocalDate saturday = payPeriodStart.plusDays(6);
-        if (punchesByDate.containsKey(saturday)) {
-            ArrayList<Punch> dayPunches = punchesByDate.get(saturday);
-            totalWorkedMinutes += calculateTotalMinutes(dayPunches, shift); // Added shift argument- nll
-        }
-
         return totalWorkedMinutes;
     }
 /**
@@ -181,30 +170,11 @@ public final class DAOUtility {
     }
  
     public static BigDecimal calculateAbsenteeism(ArrayList<Punch> punchlist, Shift shift) {
-        /*
-        LocalDate sampleDate = punchlist.get(0).getAdjustedtimestamp().toLocalDate();
-        LocalDate payPeriodStart = sampleDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
-        
-        List<LocalDate> scheduledDays = new ArrayList<>();
-        // Monday through Friday (days 1 through 5)
-        for (int i = 1; i <= 5; i++) {
-            scheduledDays.add(payPeriodStart.plusDays(i));
-        }
-
-        // https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html
-        
-        // Group punches by date
-        Map<LocalDate, ArrayList<Punch>> punchesByDate = new HashMap<>();
-        for (Punch punch : punchlist) {
-            LocalDate date = punch.getAdjustedtimestamp().toLocalDate();
-            punchesByDate.computeIfAbsent(date, k -> new ArrayList<>()).add(punch);
-        }
-        */
-        
         int totalWorkedMinutes = calculateTotalWorkedMinutesInPayPeriod(punchlist, shift);
+        int workDays = 5;
         
         //  ( 510 - 30 ) * 5
-        int totalScheduledMinutes =  (shift.getShiftDuration() - shift.getLunchDuration()) * 5;
+        int totalScheduledMinutes =  (shift.getShiftDuration() - shift.getLunchDuration()) * workDays;
 
         double absenteeism = ((double)(totalScheduledMinutes - totalWorkedMinutes) / totalScheduledMinutes) * 100;
         BigDecimal percentage = BigDecimal.valueOf(absenteeism).setScale(2, RoundingMode.HALF_UP);
