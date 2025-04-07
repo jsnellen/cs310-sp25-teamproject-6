@@ -179,11 +179,7 @@ public class Punch {
         if (punchtype == EventType.CLOCK_OUT) {
             // First, if the punch (when seconds are zeroed) exactly equals shift stop
             if (original.withSecond(0).equals(shiftStopTime)) {
-                if (s.getDockPenalty() > 0) {
-                    setAdjustment(shiftStopTime, PunchAdjustmentType.SHIFT_DOCK);
-                } else {
-                    setAdjustment(shiftStopTime, PunchAdjustmentType.NONE);
-                }
+                setAdjustment(shiftStopTime, PunchAdjustmentType.SHIFT_STOP);
                 return;
             }
             // Late clock-out: if after shift stop and within the interval, adjust to shift stop
