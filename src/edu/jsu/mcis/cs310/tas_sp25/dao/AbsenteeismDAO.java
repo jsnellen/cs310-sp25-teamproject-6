@@ -72,8 +72,7 @@ public class AbsenteeismDAO {
             //QUERY_CREATE is "REPLACE INTO absenteeism (employeeid, payperiod, percentage) VALUES (?, ?, ?)";
             PreparedStatement stmt = conn.prepareStatement(QUERY_CREATE);
             stmt.setInt(1, absenteeism.getEmployee().getId());
-            LocalDate normalized = absenteeism.getPayPeriod().with(java.time.temporal.TemporalAdjusters.previousOrSame(java.time.DayOfWeek.SUNDAY));
-            stmt.setDate(2, Date.valueOf(normalized));
+            stmt.setDate(2, Date.valueOf(absenteeism.getPayPeriod()));
             stmt.setDouble(3, absenteeism.getPercentage().doubleValue());
 
             stmt.executeUpdate();
