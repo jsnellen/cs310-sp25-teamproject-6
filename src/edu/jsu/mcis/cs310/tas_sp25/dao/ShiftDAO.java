@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import edu.jsu.mcis.cs310.tas_sp25.Shift;
 import java.util.HashMap;
 import edu.jsu.mcis.cs310.tas_sp25.Badge;
+import edu.jsu.mcis.cs310.tas_sp25.DailySchedule;
 import edu.jsu.mcis.cs310.tas_sp25.dao.DAOException;
 
 
@@ -30,7 +31,13 @@ public class ShiftDAO {
     /**
      * The SQL query to find a shift record by its ID.
      */
-    private static final String QUERY_FIND_BY_ID     = "SELECT * FROM shift WHERE id = ?";
+    private static final String QUERY_FIND_BY_ID = 
+        "SELECT s.id AS shiftid, s.description, s.dailyscheduleid, " +
+        "d.shiftstart, d.shiftstop, d.roundinterval, d.graceperiod, " +
+        "d.dockpenalty, d.lunchstart, d.lunchstop, d.lunchthreshold " +
+        "FROM shift s " +
+        "JOIN dailyschedule d ON s.dailyscheduleid = d.id " +
+        "WHERE s.id = ?";
     /**
      * The SQL query findS the shift ID associated with a specific badge ID in the employee table.
      */
@@ -77,20 +84,22 @@ public class ShiftDAO {
                 if (hasResults) {
                     rs = ps.getResultSet();
                     
-                    while (rs.next()) {
-                        HashMap<String, String> shiftData = new HashMap<>();
+                    if (rs.next()) {
+                        String description = rs.getString("description");
+
+                        DailySchedule schedule = new DailySchedule(
+                            rs.getInt("dailyscheduleid"),
+                            rs.getTime("shiftstart").toLocalTime(),
+                            rs.getTime("shiftstop").toLocalTime(),
+                            rs.getInt("roundinterval"),
+                            rs.getInt("graceperiod"),
+                            rs.getInt("dockpenalty"),
+                            rs.getTime("lunchstart").toLocalTime(),
+                            rs.getTime("lunchstop").toLocalTime(),
+                            rs.getInt("lunchthreshold")
+                        );
                         
-                        shiftData.put("description", rs.getString("description"));
-                        shiftData.put("shiftStart", rs.getString("shiftstart"));
-                        shiftData.put("shiftStop", rs.getString("shiftstop"));
-                        shiftData.put("lunchStart", rs.getString("lunchstart"));
-                        shiftData.put("lunchStop", rs.getString("lunchstop"));
-                        shiftData.put("roundInterval", rs.getString("roundinterval"));
-                        shiftData.put("gracePeriod", rs.getString("graceperiod"));
-                        shiftData.put("dockPenalty", rs.getString("dockpenalty"));
-                        shiftData.put("lunchThreshold", rs.getString("lunchthreshold"));
-                        
-                        shift = new Shift(id, shiftData);
+                        shift = new Shift(id, description, schedule);
                     }
                 }
             }

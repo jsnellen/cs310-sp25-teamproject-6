@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.time.temporal.TemporalAdjusters;
 import com.github.cliftonlabs.json_simple.*;
+import edu.jsu.mcis.cs310.tas_sp25.DailySchedule;
 import edu.jsu.mcis.cs310.tas_sp25.Punch; // imports Punch for DAT method
 import edu.jsu.mcis.cs310.tas_sp25.Shift; // imports Shift for DAT method
 import java.math.BigDecimal; // imported BigDecimal for calculateAbsenteeism method - nll
@@ -171,10 +172,28 @@ public final class DAOUtility {
  
     public static BigDecimal calculateAbsenteeism(ArrayList<Punch> punchlist, Shift shift) {
         int totalWorkedMinutes = calculateTotalWorkedMinutesInPayPeriod(punchlist, shift);
-        int workDays = 5;
         
         //  ( 510 - 30 ) * 5
-        int totalScheduledMinutes =  (shift.getShiftDuration() - shift.getLunchDuration()) * workDays;
+        //int totalScheduledMinutes =  (shift.getShiftDuration() - shift.getLunchDuration()) * workDays;
+        
+        
+        // refactored to use getDailySchedule for each day
+        int totalScheduledMinutes = 0;
+
+        LocalDate sampleDate = punchlist.get(0).getAdjustedtimestamp().toLocalDate();
+        LocalDate payPeriodStart = sampleDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
+        LocalDate payPeriodEnd = sampleDate.with(TemporalAdjusters.next(DayOfWeek.SATURDAY));
+
+        for (LocalDate day = payPeriodStart; !day.isAfter(payPeriodEnd); day = day.plusDays(1)) {
+            DayOfWeek dow = day.getDayOfWeek();
+
+            if (dow.getValue() >= DayOfWeek.MONDAY.getValue() && dow.getValue() <= DayOfWeek.FRIDAY.getValue()) {
+                DailySchedule schedule = shift.getDailySchedule(dow);
+                int minutes = (int) Duration.between(schedule.getShiftstart(), schedule.getShiftstop()).toMinutes();
+                minutes -= (int) Duration.between(schedule.getLunchstart(), schedule.getLunchstop()).toMinutes();
+                totalScheduledMinutes += minutes;
+            }
+        }
 
         double absenteeism = ((double)(totalScheduledMinutes - totalWorkedMinutes) / totalScheduledMinutes) * 100;
         BigDecimal percentage = BigDecimal.valueOf(absenteeism).setScale(2, RoundingMode.HALF_UP);

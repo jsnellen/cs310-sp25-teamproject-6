@@ -6,6 +6,8 @@ package edu.jsu.mcis.cs310.tas_sp25;
 import java.time.LocalTime;
 import java.time.Duration;
 import java.util.HashMap;
+import edu.jsu.mcis.cs310.tas_sp25.DailySchedule;
+import java.time.DayOfWeek;
 
 /**
  * <p>The Shift class represents a scheduled work shift in
@@ -37,46 +39,50 @@ public class Shift {
     /**
      * The start time of the shift.
      */
-    private final LocalTime shiftStart;
+    
+    //private final LocalTime shiftStart;
     /**
      * The stop time of the shift.
      */
-    private final LocalTime shiftStop;
+    //private final LocalTime shiftStop;
     /**
      * The start time of the lunch break.
      */
-    private final LocalTime lunchStart;
+    //private final LocalTime lunchStart;
     /**
      * The stop time of the lunch break.
      */
-    private final LocalTime lunchStop;
+    //private final LocalTime lunchStop;
     /**
      * The length of the lunch break (minutes).
      */
-    private final int lunchDuration;
+    //private final int lunchDuration;
     /**
      * The total scheduled duration of the shift (minutes).
      */
-    private final int shiftDuration;
+    //private final int shiftDuration;
     /**
      * The rounding interval (minutes) used for adjusting punches near
      * the start or end of the shift or break periods.
      */
-    private final int roundInterval;
+    //private final int roundInterval;
     /**
      * The grace period (minutes) for late arrivals or early departures
      */
-    private final int gracePeriod;
+    //private final int gracePeriod;
     /**
      * The docking penalty (in minutes) which is applied if an employee
      * arrives too late or leaves too early beyond the grace period.
      */
-    private final int dockPenalty;
+    //private final int dockPenalty;
     /**
      * The minimum number of minutes an employee must work before a
      * lunch deduction is applied, often used to skip lunch for short shifts.
      */
-    private final int lunchThreshold;         
+    //private final int lunchThreshold;    
+    
+    private DailySchedule defaultschedule;
+    private HashMap<Integer, DailySchedule> dailyschedules;
 
     // create the constructor - MF
     /**
@@ -93,23 +99,32 @@ public class Shift {
      *                  "shiftStop", "lunchStart", "lunchStop", "roundInterval",
      *                  "gracePeriod", "dockPenalty", and "lunchThreshold".
      */
-    public Shift(int id, HashMap<String, String> shiftData){
+    public Shift(int id, String description, DailySchedule defaultschedule) {
         this.id = id;
-        this.description = shiftData.get("description");
+        this.description = description;
         // converts the shift start/stop, lunch start/stop to LocalTime objects
-        this.shiftStart = LocalTime.parse(shiftData.get("shiftStart"));
-        this.shiftStop = LocalTime.parse(shiftData.get("shiftStop"));
-        this.lunchStart = LocalTime.parse(shiftData.get("lunchStart"));
-        this.lunchStop = LocalTime.parse(shiftData.get("lunchStop"));
+        //this.shiftStart = LocalTime.parse(shiftData.get("shiftStart"));
+        //this.shiftStop = LocalTime.parse(shiftData.get("shiftStop"));
+        //this.lunchStart = LocalTime.parse(shiftData.get("lunchStart"));
+        //this.lunchStop = LocalTime.parse(shiftData.get("lunchStop"));
         // calculates the length of lunch and shift
-        this.lunchDuration = (int) Duration.between(this.lunchStart, this.lunchStop).toMinutes();
-        this.shiftDuration = (int) Duration.between(this.shiftStart, this.shiftStop).toMinutes();
+        //this.lunchDuration = (int) Duration.between(this.lunchStart, this.lunchStop).toMinutes();
+        //this.shiftDuration = (int) Duration.between(this.shiftStart, this.shiftStop).toMinutes();
         
-        this.roundInterval = Integer.parseInt(shiftData.get("roundInterval"));
-        this.gracePeriod = Integer.parseInt(shiftData.get("gracePeriod"));
-        this.dockPenalty = Integer.parseInt(shiftData.get("dockPenalty"));
-        this.lunchThreshold = Integer.parseInt(shiftData.get("lunchThreshold"));
-
+        //this.roundInterval = Integer.parseInt(shiftData.get("roundInterval"));
+        //this.gracePeriod = Integer.parseInt(shiftData.get("gracePeriod"));
+        //this.dockPenalty = Integer.parseInt(shiftData.get("dockPenalty"));
+        //this.lunchThreshold = Integer.parseInt(shiftData.get("lunchThreshold"));
+        
+        this.defaultschedule = defaultschedule;
+        this.dailyschedules = new HashMap<>();
+        
+        // Set all weekdays (Monday–Friday) to use the default schedule
+        for (DayOfWeek day : DayOfWeek.values()) {
+            if (day.getValue() >= DayOfWeek.MONDAY.getValue() && day.getValue() <= DayOfWeek.FRIDAY.getValue()) {
+                dailyschedules.put(day.getValue(), defaultschedule);
+            }
+        }
     }
 
     // getter methods - MF
@@ -129,13 +144,24 @@ public class Shift {
     public String getDescription() { 
         return description; 
     }
+    
+    // Default schedule
+    public DailySchedule getDefaultschedule() {
+        return defaultschedule;
+    }
+
+    // Daily schedule access
+    public DailySchedule getDailySchedule(DayOfWeek day) {
+        return dailyschedules.getOrDefault(day.getValue(), defaultschedule);
+    }
+    
     /**
      * Returns the start time of the shift.
      *
      * @return shift start time
      */
     public LocalTime getShiftStart(){
-        return shiftStart;
+        return defaultschedule.getShiftstart();
     }
     /**
      * Returns the stop time of the shift.
@@ -143,7 +169,7 @@ public class Shift {
      * @return shift stop time
      */
     public LocalTime getShiftStop(){
-        return shiftStop;
+        return defaultschedule.getShiftstop();
     }
     /**
      * Returns the time at which lunch begins.
@@ -151,7 +177,7 @@ public class Shift {
      * @return lunch start time
      */
     public LocalTime getLunchStart(){
-        return lunchStart;
+        return defaultschedule.getLunchstart();
     }
     /**
      * Returns the time at which lunch ends.
@@ -159,7 +185,7 @@ public class Shift {
      * @return lunch stop time
      */
     public LocalTime getLunchStop(){
-        return lunchStop;
+        return defaultschedule.getLunchstop();
     }
     /**
      * Returns the total length of lunch (minutes).
@@ -167,7 +193,7 @@ public class Shift {
      * @return lunch duration in minutes
      */
     public int getLunchDuration() {
-        return lunchDuration;
+        return (int) java.time.Duration.between(getLunchStart(), getLunchStop()).toMinutes();
     }
     /**
      * Returns the total length of this shift in minutes, including lunch.
@@ -175,7 +201,7 @@ public class Shift {
      * @return the full shift duration in minutes
      */
     public int getShiftDuration() {
-        return shiftDuration;
+        return (int) java.time.Duration.between(getShiftStart(), getShiftStop()).toMinutes();
     }
     
     // Added new getter methods for adjustment parameters - WW
@@ -185,7 +211,7 @@ public class Shift {
      * @return the round interval
      */
     public int getRoundInterval(){
-        return roundInterval;
+        return defaultschedule.getRoundinterval();
     }
     /**
      * Returns the grace period (minutes) before dock penalty is applied.
@@ -193,7 +219,7 @@ public class Shift {
      * @return the grace period
      */
     public int getGracePeriod(){
-        return gracePeriod;
+        return defaultschedule.getGraceperiod();
     }
     /**
      * Returns the dock penalty (minutes) for excessive tardiness/early departure.
@@ -201,7 +227,7 @@ public class Shift {
      * @return the dock penalty
      */
     public int getDockPenalty(){
-        return dockPenalty;
+        return defaultschedule.getDockpenalty();
     }
     /**
      * Returns the lunch threshold (minutes) which must be exceeded
@@ -210,7 +236,7 @@ public class Shift {
      * @return the lunch threshold in minutes
      */
     public int getLunchThreshold() { 
-        return lunchThreshold; 
+        return defaultschedule.getLunchthreshold();
     }
     
     
@@ -228,14 +254,14 @@ public class Shift {
                 : "Shift " + id;
 
         StringBuilder sb = new StringBuilder(label);
-        sb.append(": ");  
-
-        sb.append(shiftStart).append(" - ");
-        sb.append(shiftStop).append(" (");
-        sb.append(shiftDuration).append(" minutes); Lunch: ");
-        sb.append(lunchStart).append(" - ");
-        sb.append(lunchStop).append(" (");
-        sb.append(lunchDuration).append(" minutes)");
+        sb.append(": ");
+        
+        sb.append(getShiftStart()).append(" - ");
+        sb.append(getShiftStop()).append(" (");
+        sb.append(getShiftDuration()).append(" minutes); Lunch: ");
+        sb.append(getLunchStart()).append(" - ");
+        sb.append(getLunchStop()).append(" (");
+        sb.append(getLunchDuration()).append(" minutes)");
 
         return sb.toString();
     }
