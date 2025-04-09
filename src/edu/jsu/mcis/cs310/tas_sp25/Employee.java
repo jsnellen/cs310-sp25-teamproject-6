@@ -9,7 +9,7 @@ import java.time.format.DateTimeFormatter;
 
 /**
  *
- * @Creating Employee class, Nehemias Lucas 2-24-2025
+ * @author Nehemias Lucas
  */
 public class Employee { //Class 
     // Initiate variables

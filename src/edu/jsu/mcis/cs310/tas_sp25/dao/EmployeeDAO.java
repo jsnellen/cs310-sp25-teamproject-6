@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 /**
  *
- * @created EmployeeDAO, Nehemias Lucas 2-24-2025
+ * @author Nehemias Lucas 
  */
 public class EmployeeDAO {
     
