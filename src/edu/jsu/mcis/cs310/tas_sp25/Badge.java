@@ -1,4 +1,5 @@
 package edu.jsu.mcis.cs310.tas_sp25;
+import java.util.zip.CRC32; // Used for create method of Badge
 
 /**
  * <p>The Badge class represents an employee's badge in the Time and Attendance
@@ -26,6 +27,20 @@ public class Badge {
         this.description = description;
     }
     
+    // Constructor to crate new badge - nll
+    public Badge(String description) {
+        this.description = description;
+        this.id =  generateId(description); // Calls generateId method - nll
+   
+    }
+    // Method implemented to generate a unique id using the description and returns as String. - nll
+    public String generateId(String description) {
+     CRC32 crc = new CRC32(); // Creates CRC32 object
+     crc.update(description.getBytes()); // uses the description to create a unique value
+     long newID = crc.getValue(); // assigns the value to newID
+     return String.format("%08X", newID); // returns as string thats formatted to requirements ( hexadecimal string,8 decimals, with 0 added if needed)
+    }
+   
     /**
      * Returns the badge ID.
      *

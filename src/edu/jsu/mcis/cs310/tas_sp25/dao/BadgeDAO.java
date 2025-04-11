@@ -2,7 +2,7 @@ package edu.jsu.mcis.cs310.tas_sp25.dao;
 
 import edu.jsu.mcis.cs310.tas_sp25.*;
 import java.sql.*;
-
+import java.util.zip.CRC32;
 /**
  * <p>The BadgeDAO class gives data access methods for getting
  * {@link Badge} objects from the database.</p>
@@ -18,6 +18,9 @@ public class BadgeDAO {
      * SQL query to select a badge relative to its ID.
      */
     private static final String QUERY_FIND = "SELECT * FROM badge WHERE id = ?";
+     // SQL queries to create new badge into database 
+    private static final String INSERT_BADGE   = "INSERT INTO badge (id, description) VALUES (?,?)"; 
+
 
     /**
      * Reference to {@link DAOFactory} FOR database connectivity.
@@ -108,6 +111,50 @@ public class BadgeDAO {
 
         return badge;
 
+    }
+    
+    // Create method for BadgeDAO - NLL
+    
+     public boolean create(Badge badge){ //retunr value is boolean as required
+        boolean result = false; // initialize result
+        PreparedStatement ps = null;
+        ResultSet keys = null;
+
+
+        try {
+            Connection conn = daoFactory.getConnection();
+
+            if (conn.isValid(0)) {
+
+
+                PreparedStatement statement = conn.prepareStatement(INSERT_BADGE);
+
+                statement.setString(1, badge.getId()); 
+                statement.setString(2, badge.getDescription());
+
+                ResultSet rs = statement.executeQuery();
+                
+                int numofChanges = statement.executeUpdate(); //returns number of rows in the database that was changed
+                // Maybe use badge find method to like as in punch? idk how tho (no comments in punch create method)
+                if (numofChanges == 1) { // if num of chanages is 1, result = true (create method was successful) else reuslt = false (fail)
+                    result = true;
+                    System.out.println("Successful in creating new badge");
+
+                }
+                else {
+                    result = false;
+                    System.out.println("Failed to create new badge");
+                }
+                
+            }
+        } catch (SQLException e) {
+            throw new DAOException(e.getMessage());
+        } finally {
+            if (keys != null) try { keys.close(); } catch (SQLException e) { throw new DAOException(e.getMessage()); }
+            if (ps != null) try { ps.close(); } catch (SQLException e) { throw new DAOException(e.getMessage()); }
+        }
+        
+        return result;
     }
 
 }

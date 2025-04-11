@@ -23,8 +23,9 @@ public class Version2_BadgeCreateDeleteTest {
         Badge b1 = new Badge("Bies, Bill X");
 
         /* Compare Badge to Expected Value */
-        
+        System.out.println (b1); // checking by print()
         assertEquals("#052B00DC (Bies, Bill X)", b1.toString());
+        
 
     }
     
