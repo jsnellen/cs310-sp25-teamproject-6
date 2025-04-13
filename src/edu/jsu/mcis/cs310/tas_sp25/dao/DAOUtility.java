@@ -183,21 +183,37 @@ public final class DAOUtility {
         LocalDate sampleDate = punchlist.get(0).getAdjustedtimestamp().toLocalDate();
         LocalDate payPeriodStart = sampleDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
         LocalDate payPeriodEnd = sampleDate.with(TemporalAdjusters.next(DayOfWeek.SATURDAY));
+        
+        System.out.println("\n--- Calculating Absenteeism for Pay Period: " + payPeriodStart + " to " + payPeriodEnd + " ---");
 
         for (LocalDate day = payPeriodStart; !day.isAfter(payPeriodEnd); day = day.plusDays(1)) {
             DayOfWeek dow = day.getDayOfWeek();
 
             if (dow.getValue() >= DayOfWeek.MONDAY.getValue() && dow.getValue() <= DayOfWeek.FRIDAY.getValue()) {
                 DailySchedule schedule = shift.getDailySchedule(dow);
-                int minutes = (int) Duration.between(schedule.getShiftstart(), schedule.getShiftstop()).toMinutes();
-                minutes -= (int) Duration.between(schedule.getLunchstart(), schedule.getLunchstop()).toMinutes();
+
+                int shiftMinutes = (int) Duration.between(schedule.getShiftstart(), schedule.getShiftstop()).toMinutes();
+                int lunchMinutes = (int) Duration.between(schedule.getLunchstart(), schedule.getLunchstop()).toMinutes();
+                int minutes = shiftMinutes - lunchMinutes;
+                
+                System.out.println("Day: " + dow);
+                System.out.println("  Shift Start: " + schedule.getShiftstart());
+                System.out.println("  Shift Stop: " + schedule.getShiftstop());
+                System.out.println("  Lunch: " + schedule.getLunchstart() + "–" + schedule.getLunchstop());
+                System.out.println("  Scheduled Minutes: " + minutes);
                 totalScheduledMinutes += minutes;
             }
         }
+        System.out.println("Total Scheduled Minutes: " + totalScheduledMinutes);
+        System.out.println("Total Worked Minutes: " + totalWorkedMinutes);
 
         double absenteeism = ((double)(totalScheduledMinutes - totalWorkedMinutes) / totalScheduledMinutes) * 100;
         BigDecimal percentage = BigDecimal.valueOf(absenteeism).setScale(2, RoundingMode.HALF_UP);
         
+        System.out.println("Absenteeism %: " + percentage);
+        System.out.println("--------------------------------------------------\n");
+
+
         return percentage;
     }
     

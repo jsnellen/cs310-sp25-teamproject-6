@@ -9,10 +9,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import edu.jsu.mcis.cs310.tas_sp25.Shift;
-import java.util.HashMap;
 import edu.jsu.mcis.cs310.tas_sp25.Badge;
 import edu.jsu.mcis.cs310.tas_sp25.DailySchedule;
-import edu.jsu.mcis.cs310.tas_sp25.dao.DAOException;
+import java.time.LocalDate;
 
 
 /**
@@ -31,13 +30,28 @@ public class ShiftDAO {
     /**
      * The SQL query to find a shift record by its ID.
      */
-    private static final String QUERY_FIND_BY_ID = 
-        "SELECT s.id AS shiftid, s.description, s.dailyscheduleid, " +
-        "d.shiftstart, d.shiftstop, d.roundinterval, d.graceperiod, " +
-        "d.dockpenalty, d.lunchstart, d.lunchstop, d.lunchthreshold " +
-        "FROM shift s " +
-        "JOIN dailyschedule d ON s.dailyscheduleid = d.id " +
-        "WHERE s.id = ?";
+    // s for shift, d for Dailyschedule
+    private static final String QUERY_FIND_BY_ID = """
+        SELECT s.id AS shiftid, s.description, s.dailyscheduleid, 
+            d.shiftstart, d.shiftstop, d.roundinterval, d.graceperiod, 
+            d.dockpenalty, d.lunchstart, d.lunchstop, d.lunchthreshold 
+        FROM shift s 
+        JOIN dailyschedule d ON s.dailyscheduleid = d.id 
+        WHERE s.id = ?
+        """;
+    
+    // so for ScheduleOverride, d for Dailyschedule
+    private static final String QUERY_FIND_OVERRIDES = """
+        SELECT so.day, d.id AS dailyscheduleid,
+            d.shiftstart, d.shiftstop, d.roundinterval, d.graceperiod,
+            d.dockpenalty, d.lunchstart, d.lunchstop, d.lunchthreshold
+        FROM scheduleoverride so
+        JOIN dailyschedule d ON so.dailyscheduleid = d.id
+        WHERE (so.start <= ? AND (so.end IS NULL OR ? <= so.end))
+        AND (so.badgeid = ? OR so.badgeid IS NULL)
+        ORDER BY so.badgeid DESC, so.start DESC
+        """;
+    
     /**
      * The SQL query findS the shift ID associated with a specific badge ID in the employee table.
      */
@@ -155,6 +169,70 @@ public class ShiftDAO {
                         int shiftId = rs.getInt("shiftid");
                         shift = find(shiftId);
                     }
+                }
+            }
+        } catch (SQLException e) {
+            throw new DAOException(e.getMessage());
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    throw new DAOException(e.getMessage());
+                }
+            }
+            if (ps != null) {
+                try {
+                    ps.close();
+                } catch (SQLException e) {
+                    throw new DAOException(e.getMessage());
+                }
+            }
+        }
+        return shift;
+    }
+
+    public Shift find(Badge badge, LocalDate ts) {
+        Shift shift = find(badge);       
+        PreparedStatement ps = null; 
+        ResultSet rs = null;    
+
+        try {
+            Connection conn = daoFactory.getConnection();
+            if (conn.isValid(0)) {
+                ps = conn.prepareStatement(QUERY_FIND_OVERRIDES);
+                ps.setDate(1, java.sql.Date.valueOf(ts));
+                ps.setDate(2, java.sql.Date.valueOf(ts));
+                ps.setString(3, badge.getId());
+
+                rs = ps.executeQuery();
+                
+                if (!rs.isBeforeFirst()) {
+                    System.out.println("No overrides found for badge: " + badge.getId() + " on date: " + ts);
+                }
+
+                while (rs.next()) {
+                    int day = rs.getInt("day");
+
+                    DailySchedule schedule = new DailySchedule(
+                        rs.getInt("dailyscheduleid"),
+                        rs.getTime("shiftstart").toLocalTime(),
+                        rs.getTime("shiftstop").toLocalTime(),
+                        rs.getInt("roundinterval"),
+                        rs.getInt("graceperiod"),
+                        rs.getInt("dockpenalty"),
+                        rs.getTime("lunchstart").toLocalTime(),
+                        rs.getTime("lunchstop").toLocalTime(),
+                        rs.getInt("lunchthreshold")
+                    );
+                    
+                    System.out.println("Applying override for badge: " + badge.getId());
+                    System.out.println(" - Day of Week (0=Sun...6=Sat): " + day);
+                    System.out.println(" - Start Time: " + schedule.getShiftstart());
+                    System.out.println(" - Stop Time: " + schedule.getShiftstop());
+                    System.out.println(" - Override Schedule ID: " + schedule.getId());
+                    
+                    shift.getDailySchedules().put(day, schedule);
                 }
             }
         } catch (SQLException e) {

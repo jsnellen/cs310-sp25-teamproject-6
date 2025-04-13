@@ -155,6 +155,10 @@ public class Shift {
         return dailyschedules.getOrDefault(day.getValue(), defaultschedule);
     }
     
+    public HashMap<Integer, DailySchedule> getDailySchedules() {
+        return dailyschedules;
+    }
+    
     /**
      * Returns the start time of the shift.
      *
