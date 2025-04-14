@@ -108,21 +108,21 @@ public final class DAOUtility {
 
         int totalWorkedMinutes = 0;
 
-        System.out.println("--- Daily Worked Minutes Breakdown ---");
+        //System.out.println("--- Daily Worked Minutes Breakdown ---");
 
         for (LocalDate day = payPeriodStart; !day.isAfter(payPeriodEnd); day = day.plusDays(1)) {
             if (punchesByDate.containsKey(day)) {
                 ArrayList<Punch> dayPunches = punchesByDate.get(day);
                 int workedMinutes = calculateTotalMinutes(dayPunches, shift);
                 totalWorkedMinutes += workedMinutes;
-                System.out.println("Day: " + day.getDayOfWeek() + " (" + day + "), Worked Minutes: " + workedMinutes);
+                //System.out.println("Day: " + day.getDayOfWeek() + " (" + day + "), Worked Minutes: " + workedMinutes);
             } else {
-                System.out.println("Day: " + day.getDayOfWeek() + " (" + day + "), No punches found.");
+                //System.out.println("Day: " + day.getDayOfWeek() + " (" + day + "), No punches found.");
             }
         }
 
-        System.out.println("Total Worked Minutes: " + totalWorkedMinutes);
-        System.out.println("---------------------------------------");
+        //System.out.println("Total Worked Minutes: " + totalWorkedMinutes);
+        //System.out.println("---------------------------------------");
 
         return totalWorkedMinutes;
     }
@@ -195,7 +195,7 @@ public final class DAOUtility {
         LocalDate payPeriodStart = sampleDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
         LocalDate payPeriodEnd = sampleDate.with(TemporalAdjusters.next(DayOfWeek.SATURDAY));
         
-        System.out.println("\n--- Calculating Absenteeism for Pay Period: " + payPeriodStart + " to " + payPeriodEnd + " ---");
+        //System.out.println("\n--- Calculating Absenteeism for Pay Period: " + payPeriodStart + " to " + payPeriodEnd + " ---");
 
         for (LocalDate day = payPeriodStart; !day.isAfter(payPeriodEnd); day = day.plusDays(1)) {
             DayOfWeek dow = day.getDayOfWeek();
@@ -207,22 +207,22 @@ public final class DAOUtility {
                 int lunchMinutes = (int) Duration.between(schedule.getLunchstart(), schedule.getLunchstop()).toMinutes();
                 int minutes = shiftMinutes - lunchMinutes;
                 
-                System.out.println("Day: " + dow);
-                System.out.println("  Shift Start: " + schedule.getShiftstart());
-                System.out.println("  Shift Stop: " + schedule.getShiftstop());
-                System.out.println("  Lunch: " + schedule.getLunchstart() + "–" + schedule.getLunchstop());
-                System.out.println("  Scheduled Minutes: " + minutes);
+                //System.out.println("Day: " + dow);
+                //System.out.println("  Shift Start: " + schedule.getShiftstart());
+                //System.out.println("  Shift Stop: " + schedule.getShiftstop());
+                //System.out.println("  Lunch: " + schedule.getLunchstart() + "–" + schedule.getLunchstop());
+                //System.out.println("  Scheduled Minutes: " + minutes);
                 totalScheduledMinutes += minutes;
             }
         }
-        System.out.println("Total Scheduled Minutes: " + totalScheduledMinutes);
-        System.out.println("Total Worked Minutes: " + totalWorkedMinutes);
+        //System.out.println("Total Scheduled Minutes: " + totalScheduledMinutes);
+        //System.out.println("Total Worked Minutes: " + totalWorkedMinutes);
 
         double absenteeism = ((double)(totalScheduledMinutes - totalWorkedMinutes) / totalScheduledMinutes) * 100;
         BigDecimal percentage = BigDecimal.valueOf(absenteeism).setScale(2, RoundingMode.HALF_UP);
         
-        System.out.println("Absenteeism %: " + percentage);
-        System.out.println("--------------------------------------------------\n");
+        //System.out.println("Absenteeism %: " + percentage);
+        //System.out.println("--------------------------------------------------\n");
 
 
         return percentage;
