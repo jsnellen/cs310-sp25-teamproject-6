@@ -140,37 +140,42 @@ public class Punch {
         // If the punch occurs on a weekend, perform IntervalRound
         if (isWeekend(original)) {
             applyIntervalRound(original, interval);
+            //System.out.println("Punch ID: " + id + " (" + punchtype + ") Original: " + original + " Adjusted: " + adjustedtimestamp + " Type: " + adjustmentType);
             return;
         }
 
         // Adjustments for CLOCK_IN punches:
         if (punchtype == EventType.CLOCK_IN) {
-            // Early clock-in: if before shift start and within the interval, adjust to shift start
-            if (original.isBefore(shiftStartTime)) {
-                long diff = java.time.Duration.between(original, shiftStartTime).toMinutes();
-                if (diff <= interval) {
-                    setAdjustment(shiftStartTime, PunchAdjustmentType.SHIFT_START);
-                    return;
-                }
+            // Early clock-in
+            LocalDateTime earliest = shiftStartTime.minusMinutes(interval);
+            if ((original.isEqual(earliest) || original.isAfter(earliest))
+                    && original.isBefore(shiftStartTime)) {
+                setAdjustment(shiftStartTime, PunchAdjustmentType.SHIFT_START);
+                //System.out.println("Punch ID: " + id + " (" + punchtype + ") Original: " + original + " Adjusted: " + adjustedtimestamp + " Type: " + adjustmentType);
+                return;
             }
             // Exactly at shift start.
             if (original.equals(shiftStartTime)) {
                 setAdjustment(shiftStartTime, PunchAdjustmentType.SHIFT_START);
+                //System.out.println("Punch ID: " + id + " (" + punchtype + ") Original: " + original + " Adjusted: " + adjustedtimestamp + " Type: " + adjustmentType);
                 return;
             }
             // If within the grace period after shift start, adjust to shift start.
             if (original.isAfter(shiftStartTime) && original.isBefore(shiftStartTime.plusMinutes(grace))) {
                 setAdjustment(shiftStartTime, PunchAdjustmentType.SHIFT_START);
+                //System.out.println("Punch ID: " + id + " (" + punchtype + ") Original: " + original + " Adjusted: " + adjustedtimestamp + " Type: " + adjustmentType);
                 return;
             }
             // Lunch break: if the punch occurs during lunch, adjust to lunch stop.
             if (isDuringLunch(original, lunchStartTime, lunchStopTime)) {
                 setAdjustment(lunchStopTime, PunchAdjustmentType.LUNCH_STOP);
+                //System.out.println("Punch ID: " + id + " (" + punchtype + ") Original: " + original + " Adjusted: " + adjustedtimestamp + " Type: " + adjustmentType);
                 return;
             }
             // Dock penalty: if the punch is later than the grace period but before shiftStart + dock.
             if (original.isAfter(shiftStartTime.plusMinutes(grace)) && original.isBefore(shiftStartTime.plusMinutes(dock))) {
                 setAdjustment(shiftStartTime.plusMinutes(dock), PunchAdjustmentType.SHIFT_DOCK);
+                //System.out.println("Punch ID: " + id + " (" + punchtype + ") Original: " + original + " Adjusted: " + adjustedtimestamp + " Type: " + adjustmentType);
                 return;
             }
         }
@@ -180,6 +185,7 @@ public class Punch {
             // First, if the punch (when seconds are zeroed) exactly equals shift stop
             if (original.withSecond(0).equals(shiftStopTime)) {
                 setAdjustment(shiftStopTime, PunchAdjustmentType.SHIFT_STOP);
+                //System.out.println("Punch ID: " + id + " (" + punchtype + ") Original: " + original + " Adjusted: " + adjustedtimestamp + " Type: " + adjustmentType);
                 return;
             }
             // Late clock-out: if after shift stop and within the interval, adjust to shift stop
@@ -187,12 +193,14 @@ public class Punch {
                 long diff = java.time.Duration.between(shiftStopTime, original).toMinutes();
                 if (diff <= interval) {
                     setAdjustment(shiftStopTime, PunchAdjustmentType.SHIFT_STOP);
+                    //System.out.println("Punch ID: " + id + " (" + punchtype + ") Original: " + original + " Adjusted: " + adjustedtimestamp + " Type: " + adjustmentType);
                     return;
                 }
             }
             // Lunch break: if the punch occurs during lunch, adjust to lunch start
             if (isDuringLunch(original, lunchStartTime, lunchStopTime)) {
                 setAdjustment(lunchStartTime, PunchAdjustmentType.LUNCH_START);
+                //System.out.println("Punch ID: " + id + " (" + punchtype + ") Original: " + original + " Adjusted: " + adjustedtimestamp + " Type: " + adjustmentType);
                 return;
             }
             // For punches before shift stop, check:
@@ -202,16 +210,19 @@ public class Punch {
                 long diff = java.time.Duration.between(original, shiftStopTime).toMinutes();
                 if (diff <= (interval / 2.0)) {
                     setAdjustment(shiftStopTime, PunchAdjustmentType.SHIFT_STOP);
+                    //System.out.println("Punch ID: " + id + " (" + punchtype + ") Original: " + original + " Adjusted: " + adjustedtimestamp + " Type: " + adjustmentType);
                     return;
                 }
                 // Otherwise, if the punch is within the grace period before shift stop, adjust to shift stop
                 if (!original.isBefore(shiftStopTime.minusMinutes(grace))) {
                     setAdjustment(shiftStopTime, PunchAdjustmentType.SHIFT_STOP);
+                    //System.out.println("Punch ID: " + id + " (" + punchtype + ") Original: " + original + " Adjusted: " + adjustedtimestamp + " Type: " + adjustmentType);
                     return;
                 }
                 // Or if within the dock penalty window, adjust to shift stop - dock
                 if (original.isBefore(shiftStopTime.minusMinutes(grace)) && !original.isBefore(shiftStopTime.minusMinutes(dock))) {
                     setAdjustment(shiftStopTime.minusMinutes(dock), PunchAdjustmentType.SHIFT_DOCK);
+                    //System.out.println("Punch ID: " + id + " (" + punchtype + ") Original: " + original + " Adjusted: " + adjustedtimestamp + " Type: " + adjustmentType);
                     return;
                 }
             }
@@ -219,6 +230,7 @@ public class Punch {
         
         // if no condition is met, use IntervalRound
         applyIntervalRound(original, interval);
+        //System.out.println("Punch ID: " + id + " (" + punchtype + ") Original: " + original + " Adjusted: " + adjustedtimestamp + " Type: " + adjustmentType);
     }
 
     /* --- --- adjust() helper methods --- --- */
@@ -260,7 +272,7 @@ public class Punch {
 
         // Returns true if the punch occurs during lunch.
         private boolean isDuringLunch(LocalDateTime punch, LocalDateTime lunchStart, LocalDateTime lunchStop) {
-            return !punch.isBefore(lunchStart) && !punch.isAfter(lunchStop);
+            return punch.isAfter(lunchStart) && punch.isBefore(lunchStop);
         }
     /* --- --- end of adjust() helper methods --- --- */
 }

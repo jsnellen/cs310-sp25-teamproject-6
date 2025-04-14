@@ -61,7 +61,7 @@ public final class DAOUtility {
         );
         // If the shift spans the entire lunch period, subtract lunch duration
         // the employee must be clocked in before lunch starts and clocked out after lunch ends
-        if (startTime.isBefore(s.getLunchStart()) && endTime.isAfter(s.getLunchStart())) {
+        if (startTime.isBefore(s.getLunchStart()) && endTime.isAfter(s.getLunchStop())) {
             durationBetween -= s.getLunchDuration();
         }
         // set and return the result
@@ -107,12 +107,23 @@ public final class DAOUtility {
         }
 
         int totalWorkedMinutes = 0;
+
+        System.out.println("--- Daily Worked Minutes Breakdown ---");
+
         for (LocalDate day = payPeriodStart; !day.isAfter(payPeriodEnd); day = day.plusDays(1)) {
             if (punchesByDate.containsKey(day)) {
                 ArrayList<Punch> dayPunches = punchesByDate.get(day);
-                totalWorkedMinutes += calculateTotalMinutes(dayPunches, shift); // Added shift argument- nll
+                int workedMinutes = calculateTotalMinutes(dayPunches, shift);
+                totalWorkedMinutes += workedMinutes;
+                System.out.println("Day: " + day.getDayOfWeek() + " (" + day + "), Worked Minutes: " + workedMinutes);
+            } else {
+                System.out.println("Day: " + day.getDayOfWeek() + " (" + day + "), No punches found.");
             }
         }
+
+        System.out.println("Total Worked Minutes: " + totalWorkedMinutes);
+        System.out.println("---------------------------------------");
+
         return totalWorkedMinutes;
     }
 /**
