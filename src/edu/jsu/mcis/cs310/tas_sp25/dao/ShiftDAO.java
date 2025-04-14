@@ -207,9 +207,10 @@ public class ShiftDAO {
 
                 rs = ps.executeQuery();
                 
-                if (!rs.isBeforeFirst()) {
-                    System.out.println("No overrides found for badge: " + badge.getId() + " on date: " + ts);
-                }
+                //if (!rs.isBeforeFirst()) {
+                //    System.out.println("No overrides found for badge: " + badge.getId() + " on date: " + ts);
+                //}
+                
 
                 while (rs.next()) {
                     int day = rs.getInt("day");
@@ -226,11 +227,11 @@ public class ShiftDAO {
                         rs.getInt("lunchthreshold")
                     );
                     
-                    System.out.println("Applying override for badge: " + badge.getId());
-                    System.out.println(" - Day of Week (0=Sun...6=Sat): " + day);
-                    System.out.println(" - Start Time: " + schedule.getShiftstart());
-                    System.out.println(" - Stop Time: " + schedule.getShiftstop());
-                    System.out.println(" - Override Schedule ID: " + schedule.getId());
+                    //System.out.println("Applying override for badge: " + badge.getId());
+                    //System.out.println(" - Day of Week (0=Sun...6=Sat): " + day);
+                    //System.out.println(" - Start Time: " + schedule.getShiftstart());
+                    //System.out.println(" - Stop Time: " + schedule.getShiftstop());
+                    //System.out.println(" - Override Schedule ID: " + schedule.getId());
                     
                     shift.getDailySchedules().put(day, schedule);
                 }
