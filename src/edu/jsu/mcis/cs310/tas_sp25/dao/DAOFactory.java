@@ -57,6 +57,10 @@ public final class DAOFactory {
     public AbsenteeismDAO getAbsenteeismDAO(){
         return new AbsenteeismDAO(this);
     }
+    // Added method to get ReportDAO - Nehemias Lucas 3-12-2025
+    public ReportDAO getReportDAO(){
+        return new ReportDAO (this);
+    }
     
     }
 
