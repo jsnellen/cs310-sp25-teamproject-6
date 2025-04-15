@@ -18,8 +18,11 @@ public class BadgeDAO {
      * SQL query to select a badge relative to its ID.
      */
     private static final String QUERY_FIND = "SELECT * FROM badge WHERE id = ?";
-     // SQL queries to create new badge into database 
-    private static final String INSERT_BADGE   = "INSERT INTO badge (id, description) VALUES (?,?)"; 
+     // SQL query to create new badge into database 
+    private static final String CREATE_BADGE   = "INSERT INTO badge (id, description) VALUES (?,?)"; 
+    // SQL  query to delete corressponding records from the badge table
+    private static final String DELETE_BADGE   = "DELETE FROM badge WHERE id = ?"; 
+
 
 
     /**
@@ -117,8 +120,8 @@ public class BadgeDAO {
     
      public boolean create(Badge badge){ //retunr value is boolean as required
         boolean result = false; // initialize result
-        PreparedStatement ps = null;
-        ResultSet keys = null;
+        PreparedStatement statement = null;
+        ResultSet rs = null;
 
 
         try {
@@ -127,15 +130,14 @@ public class BadgeDAO {
             if (conn.isValid(0)) {
 
 
-                PreparedStatement statement = conn.prepareStatement(INSERT_BADGE);
+                statement = conn.prepareStatement(CREATE_BADGE); // Uses create query (L22)
 
                 statement.setString(1, badge.getId()); 
                 statement.setString(2, badge.getDescription());
-
-                ResultSet rs = statement.executeQuery();
+                 // commenting this out allows for test to pass, executeQuery() is not need for create, delete, and update methods
+                //rs = statement.executeQuery();
                 
                 int numofChanges = statement.executeUpdate(); //returns number of rows in the database that was changed
-                // Maybe use badge find method to like as in punch? idk how tho (no comments in punch create method)
                 if (numofChanges == 1) { // if num of chanages is 1, result = true (create method was successful) else reuslt = false (fail)
                     result = true;
                     System.out.println("Successful in creating new badge");
@@ -150,11 +152,49 @@ public class BadgeDAO {
         } catch (SQLException e) {
             throw new DAOException(e.getMessage());
         } finally {
-            if (keys != null) try { keys.close(); } catch (SQLException e) { throw new DAOException(e.getMessage()); }
-            if (ps != null) try { ps.close(); } catch (SQLException e) { throw new DAOException(e.getMessage()); }
+            if (rs != null) try { rs.close(); } catch (SQLException e) { throw new DAOException(e.getMessage()); }
+            if (statement != null) try { statement.close(); } catch (SQLException e) { throw new DAOException(e.getMessage()); }
         }
         
         return result;
     }
 
+     // Delete method for BadgeDAO - NLL
+    
+     public boolean delete (String id){ //return value is boolean as required
+        boolean result = false; // initialize result
+        PreparedStatement statement = null; // initialize prepared statement
+
+
+        try {
+            Connection conn = daoFactory.getConnection();
+         
+
+            if (conn.isValid(0)) {
+
+
+                statement = conn.prepareStatement(DELETE_BADGE); // uses delete query (L24)
+
+                statement.setString(1, id); 
+                                
+                int numofChanges = statement.executeUpdate(); // Executes query any return the number of rows affected
+                if (numofChanges == 1) { // returns true if update it successful otherwise, returns false
+                    result = true;
+                    System.out.println("Successful in deleting badge");
+
+                }
+                else {
+                    result = false;
+                    System.out.println("Failed to delete badge or badge does not exist to delete.");
+                }
+                
+            }
+        } catch (SQLException e) {
+            throw new DAOException(e.getMessage());
+        } finally {
+            if (statement != null) try { statement.close(); } catch (SQLException e) { throw new DAOException(e.getMessage()); }
+        }
+        
+        return result;
+    }
 }
