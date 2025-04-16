@@ -22,8 +22,14 @@ import java.math.RoundingMode; // imported RoundingMode for calculateAbsenteeism
 public final class DAOUtility { 
     
 
-    
-    //Creating Daily Accrued Total Method, Nehemias Lucas 3-3-2025
+    /**
+    * Calculates the total number of minutes worked in a day based on punches and shift.
+    *
+    * @param dailypunchlist list of punches for a day
+    * @param s the Shift object
+    * @return total minutes worked that day
+    * @author Nehemias Lucas, 3-3-2025
+    */
     public static int calculateTotalMinutes(ArrayList<Punch> dailypunchlist, Shift s){
         // simple check if there are no punches, return 0
         if (dailypunchlist == null || dailypunchlist.isEmpty()) {
@@ -93,7 +99,15 @@ public final class DAOUtility {
     
         return result;
     }  
-
+    /**
+    * Calculates the total minutes worked across a full pay period based on punch data.
+    *
+    * @param punchlist list of all punches in the pay period
+    * @param shift the Shift object for the employee
+    * @return total worked minutes in the pay period
+    * @author NLL
+    */
+    
     public static int calculateTotalWorkedMinutesInPayPeriod(ArrayList<Punch> punchlist, Shift shift) {
         LocalDate sampleDate = punchlist.get(0).getAdjustedtimestamp().toLocalDate();
         LocalDate payPeriodStart = sampleDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
@@ -126,13 +140,14 @@ public final class DAOUtility {
 
         return totalWorkedMinutes;
     }
-/**
-     * Converts a list of Punch objects into a JSON-formatted string.  
-     * Each punch is represented as a HashMap containing relevant details,  
-     * including timestamps, badge ID, terminal ID, punch type, and adjustment type.  
-     *  
-     * Parinita Sedai 03/09/2025  */
-    
+    /**
+     * Converts a list of punches to JSON format.
+     *
+     * @param dailypunchlist list of punches to convert
+     * @return JSON-formatted string of punch data
+     * @author Parinita Sedai, 03/09/2025
+     */
+
     
     public static String getPunchListAsJSON(ArrayList<Punch> dailypunchlist) {
         ArrayList<HashMap<String, String>> punchData = new ArrayList<>();
@@ -153,6 +168,15 @@ public final class DAOUtility {
         
         return Jsoner.serialize(punchData);     
     }
+    /**
+     * Converts a list of punches and totals (worked time, absenteeism)
+     * to a JSON-formatted string.
+     *
+     * @param punchlist the list of punches
+     * @param shift the Shift object
+     * @return JSON-formatted string including punch data and totals
+     * @author NLL
+     */
     
     public static String getPunchListPlusTotalsAsJSON(ArrayList<Punch> punchlist, Shift shift) {
         ArrayList<HashMap<String, String>> punchData = new ArrayList<>();
@@ -180,6 +204,14 @@ public final class DAOUtility {
 
         return Jsoner.serialize(json);
     }
+    
+    /**
+    * Calculates the absenteeism percentage for a pay period based on expected vs. actual minutes.
+     *
+     * @param punchlist the punch data for the pay period
+     * @param shift the Shift object for the employee
+     * @return absenteeism percentage as BigDecimal
+     */
  
     public static BigDecimal calculateAbsenteeism(ArrayList<Punch> punchlist, Shift shift) {
         int totalWorkedMinutes = calculateTotalWorkedMinutesInPayPeriod(punchlist, shift);
