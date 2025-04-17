@@ -52,6 +52,13 @@ public class ReportDAO {
                 statement.setInt(1, deptId);
             }
             
+            if(deptId != null) {
+                statement.setInt(1, deptId);
+            }
+            else { // for when it does all instead of by department -WW
+                statement.setNull(1, Types.INTEGER);
+            }
+            
             rs = statement.executeQuery();
             
             while (rs.next()) { // referenced from JSONTest 1 and 2, DAOUtility
@@ -59,16 +66,8 @@ public class ReportDAO {
             obj.put("name", rs.getString("name")); // obtains the full name  of employeefromm badge description
             obj.put("badgeid", rs.getString("badgeid")); // obtains badge id from badge
             obj.put("department", rs.getString("department")); // obtains department name from department?
-
-            String empType; // used for part-ime or full-time
-            if (rs.getInt("employeetypeid") == 1) { //if employeetype id is 1, they are full-time
-                empType = "Full-Time Employee";
-            } 
-            else { //if employeetype id is 0, they are part-time
-              empType = "Temporary Employee";
-            }
-            
-            obj.put("type", empType);
+            obj.put("type",       rs.getString("type"));    // Since we allready did the case logic insdie the SQL query 
+                                                            // we can just get it, instead of making redunant logic -WW
 
             badgeSummary.add(obj); // Adds Jsonobject to the Json Array badgeSummary
         }
