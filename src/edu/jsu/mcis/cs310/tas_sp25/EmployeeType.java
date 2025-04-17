@@ -12,9 +12,9 @@ public enum EmployeeType {
     
     public String toDescription() {
         if (this == FULL_TIME) {
-            return "Full-Time employee";
+            return "Full-Time Employee";
         } else {
-            return "Temporary employee";
+            return "Temporary Employee";
         }
     }
 
