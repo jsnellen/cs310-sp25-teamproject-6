@@ -116,8 +116,15 @@ public class BadgeDAO {
 
     }
     
-    // Create method for BadgeDAO - NLL
-    
+    /**
+     * Create method for BadgeDAO - NLL
+     *
+     * @param badge the Badge object to be inserted
+     * @return true if badge creation is successful, false otherwise
+     * @throws DAOException if a database access error occurs
+     */
+    // 
+
      public boolean create(Badge badge){ //retunr value is boolean as required
         boolean result = false; // initialize result
         PreparedStatement statement = null;
@@ -159,7 +166,13 @@ public class BadgeDAO {
         return result;
     }
 
-     // Delete method for BadgeDAO - NLL
+     /**
+     * Delete method for BadgeDAO - NLL
+     *
+     * @param id the badge ID to delete from the database
+     * @return true if badge deletion is successful, false otherwise
+     * @throws DAOException if a database access error occurs
+     */
     
      public boolean delete (String id){ //return value is boolean as required
         boolean result = false; // initialize result
