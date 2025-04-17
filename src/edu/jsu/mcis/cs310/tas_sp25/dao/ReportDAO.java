@@ -5,6 +5,7 @@
 package edu.jsu.mcis.cs310.tas_sp25.dao;
 
 import com.github.cliftonlabs.json_simple.*;
+import edu.jsu.mcis.cs310.tas_sp25.EmployeeType;
 import java.sql.Connection;
 import java.sql.*;
 
@@ -20,10 +21,7 @@ public class ReportDAO {
     private static final String BADGE_INFO = "  SELECT b.id AS badgeid,\n" + // Select b.id and rename as badgeid
 "               b.description AS name,\n" + // select badge description and rename as name
 "               d.description AS department,\n" + // select department description and rename as department
-"               CASE e.employeetypeid\n" +  // Case used for conditional statement of emplyee tpe
-"                   WHEN 0 THEN 'Temporary Employee'\n" + // tldr; if employee type id is 0, they are temporary and vice versa
-"                   WHEN 1 THEN 'Full-Time Employee'\n" +
-"               END AS type\n" + // end closes case and AS rename as type
+"               e.employeetypeid AS employeetypeid\n" +
 "          FROM employee e\n" + // all data obtained from table employee, badge, department
 "          JOIN badge b ON e.badgeid = b.id\n" +
 "          JOIN department d ON e.departmentid = d.id\n" +
@@ -40,19 +38,12 @@ public class ReportDAO {
         Connection conn = daoFactory.getConnection();
         PreparedStatement statement = null;
         ResultSet rs = null;
-        
-        
-
 
         try {
             
             statement = conn.prepareStatement(BADGE_INFO); // Uses qeury L20
             
-            if (deptId != null) { // if a department id arg is not empty sets.
-                statement.setInt(1, deptId);
-            }
-            
-            if(deptId != null) {
+            if(deptId != null) { // if a department id arg is not empty sets.
                 statement.setInt(1, deptId);
             }
             else { // for when it does all instead of by department -WW
@@ -66,8 +57,18 @@ public class ReportDAO {
             obj.put("name", rs.getString("name")); // obtains the full name  of employeefromm badge description
             obj.put("badgeid", rs.getString("badgeid")); // obtains badge id from badge
             obj.put("department", rs.getString("department")); // obtains department name from department?
-            obj.put("type",       rs.getString("type"));    // Since we allready did the case logic insdie the SQL query 
-                                                            // we can just get it, instead of making redunant logic -WW
+            
+            //reverted back to your logic, as it allows for us to use EmployeeType
+            int typeId = rs.getInt("employeetypeid");
+
+            EmployeeType employeeType;
+            if (typeId == 1) {
+                employeeType = EmployeeType.FULL_TIME;
+            } else {
+                employeeType = EmployeeType.PART_TIME;
+            }
+
+            obj.put("type", employeeType.toDescription());
 
             badgeSummary.add(obj); // Adds Jsonobject to the Json Array badgeSummary
         }

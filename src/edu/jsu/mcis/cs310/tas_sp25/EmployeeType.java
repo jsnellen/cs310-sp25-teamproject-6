@@ -9,10 +9,17 @@ public enum EmployeeType {
     private EmployeeType(String d) {
         description = d;
     }
+    
+    public String toDescription() {
+        if (this == FULL_TIME) {
+            return "Full-Time employee";
+        } else {
+            return "Temporary employee";
+        }
+    }
 
     @Override
     public String toString() {
         return description;
     }
-    
 }
