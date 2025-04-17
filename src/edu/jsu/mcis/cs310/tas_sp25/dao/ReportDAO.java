@@ -16,25 +16,25 @@ import java.sql.*;
 public class ReportDAO {
     private final DAOFactory daoFactory;
     
-    // Query for badge summary
-    private static final String BADGE_INFO = "  SELECT b.id AS badgeid,\n" +
-"               b.description AS name,\n" +
-"               d.description AS department,\n" +
-"               CASE e.employeetypeid\n" +
-"                   WHEN 0 THEN 'Temporary Employee'\n" +
+    // Query for badge summary, query statement by Weston
+    private static final String BADGE_INFO = "  SELECT b.id AS badgeid,\n" + // Select b.id and rename as badgeid
+"               b.description AS name,\n" + // select badge description and rename as name
+"               d.description AS department,\n" + // select department description and rename as department
+"               CASE e.employeetypeid\n" +  // Case used for conditional statement of emplyee tpe
+"                   WHEN 0 THEN 'Temporary Employee'\n" + // tldr; if employee type id is 0, they are temporary and vice versa
 "                   WHEN 1 THEN 'Full-Time Employee'\n" +
-"               END AS type\n" +
-"          FROM employee e\n" +
+"               END AS type\n" + // end closes case and AS rename as type
+"          FROM employee e\n" + // all data obtained from table employee, badge, department
 "          JOIN badge b ON e.badgeid = b.id\n" +
 "          JOIN department d ON e.departmentid = d.id\n" +
-"         WHERE d.id = COALESCE(?, d.id)\n" +
-"         ORDER BY b.description"; // maybe an query similar to QUERY_FIND_BY_ID in shiftDAO?
-    
+"         WHERE d.id = COALESCE(?, d.id)\n" + 
+"         ORDER BY b.description"; // order all this by name
+   
     ReportDAO(DAOFactory daoFactory){
         this.daoFactory = daoFactory;
     }
-    // referanced from Shift find(int id) in shiftDAO
-    public String getBadgeSummary(Integer deptId){ // get Badge Summary method returns JSON Array - NLL
+    // referenced from Shift find(int id) in shiftDAO
+    public String getBadgeSummary(Integer deptId){ // get Badge Summary method returns String, Accept Integer deparment id as arg - NLL
     
         JsonArray badgeSummary = new JsonArray(); // JsonArray instead of Shift shift
         Connection conn = daoFactory.getConnection();
@@ -45,23 +45,32 @@ public class ReportDAO {
 
 
         try {
-        
-            statement = conn.prepareStatement(BADGE_INFO);
-            if (deptId != null) {
+            
+            statement = conn.prepareStatement(BADGE_INFO); // Uses qeury L20
+            
+            if (deptId != null) { // if a department id arg is not empty sets.
                 statement.setInt(1, deptId);
             }
+            
             rs = statement.executeQuery();
-            while (rs.next()) {
-            JsonObject obj = new JsonObject();
-            obj.put("name", rs.getString("name"));
-            obj.put("badgeid", rs.getString("badgeid"));
-            obj.put("department", rs.getString("department"));
+            
+            while (rs.next()) { // referenced from JSONTest 1 and 2, DAOUtility
+            JsonObject obj = new JsonObject(); // json obj for each record
+            obj.put("name", rs.getString("name")); // obtains the full name  of employeefromm badge description
+            obj.put("badgeid", rs.getString("badgeid")); // obtains badge id from badge
+            obj.put("department", rs.getString("department")); // obtains department name from department?
 
-            String employeeType = rs.getInt("employeetypeid") == 0 ?
-                                  "Full-Time Employee" : "Temporary Employee";
-            obj.put("type", employeeType);
+            String empType; // used for part-ime or full-time
+            if (rs.getInt("employeetypeid") == 1) { //if employeetype id is 1, they are full-time
+                empType = "Full-Time Employee";
+            } 
+            else { //if employeetype id is 0, they are part-time
+              empType = "Temporary Employee";
+            }
+            
+            obj.put("type", empType);
 
-            badgeSummary.add(obj);
+            badgeSummary.add(obj); // Adds Jsonobject to the Json Array badgeSummary
         }
             
 
@@ -75,7 +84,7 @@ public class ReportDAO {
         try { if (statement != null) statement.close(); } catch (Exception e) {}
         try { if (conn != null) conn.close(); } catch (Exception e) {}
     }
-        return badgeSummary.toJson();
+        return badgeSummary.toJson(); // reutrn Json Array as String
     }
         
 }
