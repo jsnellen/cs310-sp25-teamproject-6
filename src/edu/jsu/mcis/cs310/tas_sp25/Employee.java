@@ -22,7 +22,19 @@ public class Employee { //Class
     private final EmployeeType employeetype;
     
 
-    // Constructor
+    /**
+     * Constructs a new {@code Employee} with the provided data
+     *
+     * @param id            the unique ID of the employee
+     * @param firstname     the employee's first name
+     * @param middlename    the employee's middle name
+     * @param lastname      the employee's last name
+     * @param badge         the {@link Badge} associated with the employee
+     * @param department    the {@link Department} the employee belongs to
+     * @param shift         the {@link Shift} assigned to the employee
+     * @param employeetype  the {@link EmployeeType}
+     * @param active        
+     */
     public Employee(int id, String firstname, String middlename, String lastname, Badge badge, Department department, Shift shift, EmployeeType employeetype, LocalDateTime active) {
         this.id = id;
         this.firstname = firstname;
@@ -37,38 +49,83 @@ public class Employee { //Class
     }
     // Getters
 
+     /**
+     * Gets the unique employee ID
+     *
+     * @return the employee ID
+     */
     public int getId() {
         return id;
     }
 
+    /**
+     * Gets the employee's first name
+     *
+     * @return the first name
+     */
     public String getFirstname() {
         return firstname;
     }
 
+    /**
+     * Gets the employee's middle name
+     *
+     * @return the middle name
+     */
     public String getMiddlename() {
         return middlename;
     }
 
+    /**
+     * Gets the employee's last name
+     *
+     * @return the last name
+     */
     public String getLastname() {
         return lastname;
     }
 
+    /**
+     * Gets the date and time the employee became active
+     *
+     * @return the activation timestamp, or {@code null} if not set
+     */
     public LocalDateTime getActive() {
         return active;
     }
 
+    /**
+     * Gets the employee's badge
+     *
+     * @return the employee's {@link Badge}
+     */
     public Badge getBadge() {
         return badge;
     }
 
+    /**
+     * Gets the employee's department
+     *
+     * @return the {@link Department} object
+     */
     public Department getDepartment() {
         return department;
     }
 
+    /**
+     * Gets the employee's assigned shift
+     *
+     * @return the {@link Shift} object
+     */
     public Shift getShift() {
         return shift;
     }
 
+    /**
+     * Gets the employee's type
+     *
+     * @return the {@link EmployeeType}
+     */
     public EmployeeType getEmployeetype() {
         return employeetype;
     }
@@ -76,6 +133,12 @@ public class Employee { //Class
         
     // ToString method 
     //rewrote this to pass tests in EmployeeFindTest.Java
+    /**
+     * Returns a string description of the employee, including name,
+     * badge, type, department, and activation date
+     *
+     * @return formatted string describing the employee
+     */
     @Override
     public String toString() {
         // Format the active date as MM/dd/yyyy, if available
