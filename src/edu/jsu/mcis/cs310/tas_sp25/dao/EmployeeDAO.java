@@ -7,10 +7,16 @@ import java.sql.*;
 import edu.jsu.mcis.cs310.tas_sp25.*;
 import java.time.LocalDateTime;
 
-
 /**
+ * The EmployeeDAO class provides methods for retrieving
+ * {@link Employee} objects from the database using either
+ * employee ID or {@link Badge}.
  *
- * @author Nehemias Lucas 
+ * <p>This class uses the {@link DAOFactory} to access
+ * related DAO objects such as BadgeDAO, DepartmentDAO, and ShiftDAO
+ * for building a complete Employee object.</p>
+ *
+ * @author Nehemias Lucas
  */
 public class EmployeeDAO {
     
@@ -25,7 +31,14 @@ public class EmployeeDAO {
 
     } 
     
-    // Find method using ID
+
+    /**
+     * Retrieves an {@link Employee} from the database using their numeric ID.
+     *
+     * @param id the employee's numeric ID
+     * @return the corresponding Employee object, or {@code null} if not found
+     * @throws DAOException if a database error occurs
+     */
     public Employee find(int id){
         Employee employee = null;
 
@@ -110,7 +123,13 @@ public class EmployeeDAO {
     }
 
 
-// Find method using Badge as object
+    /**
+     * Retrieves an {@link Employee} from the database using their {@link Badge}.
+     *
+     * @param badge the Badge object used to look up the employee
+     * @return the corresponding Employee object, or {@code null} if not found
+     * @throws DAOException if a database error occurs
+     */
 
     public Employee find(Badge badge){
         //Initializing variables
