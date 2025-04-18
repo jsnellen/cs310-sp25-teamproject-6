@@ -14,11 +14,17 @@ import edu.jsu.mcis.cs310.tas_sp25.EventType;
 import edu.jsu.mcis.cs310.tas_sp25.Badge;
 
 
-
 /**
+ * The PunchDAO class provides methods for creating, retrieving,
+ * and listing {@link Punch} records from the database.
  *
- * @Creating DAO for punch, Nehemias Loarca Lucas 2-21-2025
- * completed find method, Weston Wyatt 2/23/2025
+ * <p>Supports punch creation, retrieval by ID, single-day punch list,
+ * and multi-day punch history. This class uses other DAOs like
+ * BadgeDAO and DepartmentDAO for cross-table dependencies.</p>
+ *
+ * @author Nehemias Lucas
+ * @author Weston Wyatt (completed find method)
+ * @author Parinita Sedai (list by date)
  */
 public class PunchDAO {    
     private final DAOFactory daoFactory;
@@ -28,10 +34,23 @@ public class PunchDAO {
     private static final String QUERY_CREATE    = "SELECT departmentid FROM employee WHERE badgeid = ?";
     private static final String INSERT_PUNCH    = "INSERT INTO event (id, terminalid, badgeid, timestamp, eventtypeid) VALUES (?,?,?,?,?)"; 
      
+     /**
+     * Constructs a PunchDAO using a reference to the DAOFactory.
+     *
+     * @param daoFactory the DAOFactory used for accessing shared DB connections
+     */
     PunchDAO(DAOFactory daoFactory)
     { 
         this.daoFactory = daoFactory;
     }
+    
+       /**
+     * Retrieves a {@link Punch} from the database by its numeric ID.
+     *
+     * @param id the unique punch ID
+     * @return a Punch object if found, otherwise {@code null}
+     * @throws DAOException if a database error occurs
+     */
     
     public Punch find(int id) {
         Punch punch = null;
@@ -105,7 +124,16 @@ public class PunchDAO {
     
     }
     
-    
+    /**
+     * Creates a new {@link Punch} record in the database if the terminal is authorized.
+     * 
+     * <p>Checks whether the terminal ID matches the employee's department. If authorized,
+     * inserts the punch and returns the new ID.</p>
+     *
+     * @param punch the Punch object to insert
+     * @return the newly generated punch ID, or 0 if not authorized
+     * @throws DAOException if a database error occurs
+     */
     public int create(Punch punch){
         int newId = 0;
     PreparedStatement ps = null;
@@ -264,7 +292,17 @@ public class PunchDAO {
         return punches;
     }    
     
-    // Adding List method for punches from a range of Dates
+    /**
+     * Retrieves a list of punches for a specific badge across a range of dates.
+     *
+     * <p>Calls the single-day list method internally and compiles the results.
+     * Ensures no duplicate consecutive entries appear in the final list.</p>
+     *
+     * @param badge the Badge object to retrieve punches for
+     * @param begin the start date of the range
+     * @param end the end date of the range
+     * @return a combined ArrayList of Punch objects across the date range
+     */
     
     public ArrayList <Punch> list (Badge badge, LocalDate begin, LocalDate end) { // changed "entries" to "list" to match with test 
         ArrayList <Punch> resultEntries = new ArrayList ();
