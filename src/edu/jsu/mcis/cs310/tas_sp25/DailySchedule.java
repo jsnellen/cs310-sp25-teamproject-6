@@ -106,7 +106,7 @@ public class DailySchedule {
     /**
      * Returns the shift start time.
      *
-     * @return the shift start as {@code LocalTime}
+     * @return the shift start as {@code LocalTime}    
      */
     public LocalTime getShiftstart() {
         return shiftstart;
@@ -123,10 +123,12 @@ public class DailySchedule {
      * Returns the rounding interval in minutes.
      *
      * @return the round interval
+     *
      */
     public int getRoundinterval() {
         return roundinterval;
     }
+
     /**
      * Returns the grace period in minutes.
      *
@@ -135,6 +137,7 @@ public class DailySchedule {
     public int getGraceperiod() {
         return graceperiod;
     }
+
     /**
      * Returns the dock penalty in minutes.
      *
@@ -143,6 +146,7 @@ public class DailySchedule {
     public int getDockpenalty() {
         return dockpenalty;
     }
+
     /**
      * Returns the lunch break start time.
      *
@@ -159,6 +163,7 @@ public class DailySchedule {
     public LocalTime getLunchstop() {
         return lunchstop;
     }
+
     /**
      * Returns the threshold for automatic lunch deduction in minutes.
      *

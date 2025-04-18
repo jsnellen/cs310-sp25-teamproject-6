@@ -23,7 +23,7 @@ public class Version2_BadgeCreateDeleteTest {
         Badge b1 = new Badge("Bies, Bill X");
 
         /* Compare Badge to Expected Value */
-        System.out.println (b1); // checking by print() (debugging)
+        //System.out.println (b1); // checking by print() (debugging)
         assertEquals("#052B00DC (Bies, Bill X)", b1.toString());
         
 
@@ -46,7 +46,7 @@ public class Version2_BadgeCreateDeleteTest {
         /* Compare Badge to Expected Value */
         
         assertEquals("#02AA8E86 (Smith, Daniel Q)", b2.toString());
-        System.out.println (b2); // debugging println
+        //System.out.println (b2); // debugging println
         
         /* Check Insertion Result */
         
@@ -75,7 +75,7 @@ public class Version2_BadgeCreateDeleteTest {
         /* Compare Badge to Expected Value */
         
         assertEquals("#8EA649AD (Haney, Debra F)", b.toString());
-        System.out.println(b); // debugging println
+        //System.out.println(b); // debugging println
         
         /* Check Deletion Result */
         

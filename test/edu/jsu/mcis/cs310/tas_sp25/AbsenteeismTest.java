@@ -54,15 +54,15 @@ public class AbsenteeismTest {
 
         for (Punch punch : punchlist) {
             punch.adjust(s);
-            System.out.println(punch.printAdjusted());
+            //System.out.println(punch.printAdjusted());
         }
         
         /* Compute Pay Period Total Absenteeism */
         
         BigDecimal percentage = DAOUtility.calculateAbsenteeism(punchlist, s);
         
-        System.out.println("Calculated absenteeism: " + percentage);
-        System.out.println("Expected absenteeism: 2.50");
+        //System.out.println("Calculated absenteeism: " + percentage);
+        //System.out.println("Expected absenteeism: 2.50");
         
         /* Insert Absenteeism Into Database */
         

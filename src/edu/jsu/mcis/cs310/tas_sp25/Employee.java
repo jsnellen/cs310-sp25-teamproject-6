@@ -13,11 +13,11 @@ import java.time.format.DateTimeFormatter;
  * This class contains all essential information for an employee, including identification,
  * full name, badge, department, assigned work shift, employment type, and activation timestamp.
  * It is instantiated and populated primarily through the {@link edu.jsu.mcis.cs310.tas_sp25.dao.EmployeeDAO}
- * using data from the database. Fields such as {@link Badge}, {@link Department}, and {@link Shift}
+ * using data from the database. Fields such as Badge, Department, and Shift
  * are linked model objects representing related records in other tables.
  * </p>
  * <p>
- * The {@code EmployeeType} is stored as an enum and indicates whether the employee is
+ * The EmployeeType is stored as an enum and indicates whether the employee is
  * part-time/temporary or full-time. The {@code active} field indicates the employee’s start date.
  * </p>
  * 
@@ -54,7 +54,6 @@ public class Employee { //Class
      */
     private final EmployeeType employeetype;
     
-
     // Constructor
     /**
      * Constructs a new {@code Employee} with the provided parameters.
@@ -84,7 +83,7 @@ public class Employee { //Class
     // Getters
     /**
      * Gets the employee's numeric ID.
-     *
+     * 
      * @return the employee ID
      */
     public int getId() {
@@ -107,25 +106,26 @@ public class Employee { //Class
         return middlename;
     }
     /**
-     * Gets the employee's last name.
-     *
+     * Gets the employee's last name
+     * 
      * @return the last name
      */
     public String getLastname() {
         return lastname;
     }
+    
     /**
      * Gets the activation timestamp of the employee.
-     *
-     * @return the activation date and time
+     * 
+     * @return the activation timestamp, or {@code null} if not set
      */
     public LocalDateTime getActive() {
         return active;
     }
     /**
-     * Gets the {@code Badge} associated with the employee.
+     * Gets the Badge associated with the employee.
      *
-     * @return the {@code Badge} object
+     * @return the Badge object
      */
     public Badge getBadge() {
         return badge;
@@ -133,21 +133,21 @@ public class Employee { //Class
     /**
      * Gets the employee's assigned {@code Department}.
      *
-     * @return the {@code Department} object
+     * @return the Department object
      */
     public Department getDepartment() {
         return department;
     }
     /**
-     * Gets the {@code Shift} rule set for this employee.
+     * Gets the Shift rule set for this employee.
      *
-     * @return the {@code Shift} object
+     * @return the Shift object
      */
     public Shift getShift() {
         return shift;
     }
     /**
-     * Gets the {@code EmployeeType} (FULL_TIME or PART_TIME).
+     * Gets the EmployeeType (FULL_TIME or PART_TIME).
      *
      * @return the employee type
      */
@@ -159,10 +159,10 @@ public class Employee { //Class
     // ToString method 
     //rewrote this to pass tests in EmployeeFindTest.Java
     /**
-     * Returns a formatted string representing the full details of this {@code Employee},
-     * including name, badge ID, type, department, and activation date.
+     * Returns a string description of the employee, including name,
+     * badge, type, department, and activation date
      *
-     * @return the formatted employee description
+     * @return formatted string describing the employee
      */
     @Override
     public String toString() {
