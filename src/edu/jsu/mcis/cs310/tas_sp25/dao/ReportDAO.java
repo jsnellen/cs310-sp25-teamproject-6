@@ -11,7 +11,7 @@ import java.sql.*;
 
 
 /**
- *
+ * Handles the generation of badge summary reports from the database.
  * @author nehemias Lucas , 4-15-2025
  */
 public class ReportDAO {
@@ -31,7 +31,13 @@ public class ReportDAO {
     ReportDAO(DAOFactory daoFactory){
         this.daoFactory = daoFactory;
     }
-    // referenced from Shift find(int id) in shiftDAO
+
+    /**
+     * Returns a JSON string summarizing badge data for a specific department or all departments.
+     *
+     * @param deptId department ID to filter by (or null to include all)
+     * @return a JSON string of badge summary data
+     */
     public String getBadgeSummary(Integer deptId){ // get Badge Summary method returns String, Accept Integer deparment id as arg - NLL
     
         JsonArray badgeSummary = new JsonArray(); // JsonArray instead of Shift shift
