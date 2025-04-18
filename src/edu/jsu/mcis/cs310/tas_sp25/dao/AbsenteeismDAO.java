@@ -16,7 +16,7 @@ import java.math.BigDecimal;
  * for a specific pay period.
  * </p>
  * 
- * @author afrix
+ * @author Michael Frix
  * @author Nehemias Lucas
  * @version 3/13/2025
  */

@@ -12,8 +12,20 @@ import java.time.ZoneOffset;
 import java.time.DayOfWeek;  // added for DayOfWeek
 
 /**
+ * The {@code Punch} class represents a single time punch event made by an employee in
+ * the Time and Attendance System. Each punch includes a terminal ID, a badge,
+ * a punch type (e.g., CLOCK IN, CLOCK OUT), and two timestamps:
+ * the original timestamp and an adjusted timestamp.
+ * <p>
+ * 
+ * Punches can be created either as new events or by retrieving existing events
+ * from the database. The class supports the adjustment of timestamps based on
+ * shift rules provided in the {@link Shift} class. Adjustments are tracked via
+ * {@link PunchAdjustmentType}.
+ * </p>
  *
- * @Creating Punch class Nehemias Loarca Lucas 2-21-2025
+ * @author Nehemias Loarca Lucas
+ * @author Weston Wyatt
  */
 public class Punch {
     // Intialize
@@ -27,9 +39,18 @@ public class Punch {
     private LocalDateTime originaltimestamp = null;
     private LocalDateTime adjustedtimestamp = null;
     
+    /** Formatter for printing timestamps in standard format. */
     public static final DateTimeFormatter TIMESTAMP_FORMAT = DateTimeFormatter.ofPattern("EEE MM/dd/yyyy HH:mm:ss");
 
     // Constructor
+    /**
+     * Constructs a new Punch object for a new punch entry.
+     * The punch ID is null and the timestamp is initialized to the current system time.
+     *
+     * @param terminalid  the terminal ID where the punch was made
+     * @param badge       the {@link Badge} associated with the employee
+     * @param punchtype   the type of punch (e.g., CLOCK_IN, CLOCK_OUT)
+     */
     public Punch(int terminalid, Badge badge, EventType punchtype){ // for new punch objects
         this.terminalid = terminalid;
         this.badge = badge;
@@ -37,6 +58,15 @@ public class Punch {
         this.originaltimestamp = LocalDateTime.now().withNano(0);
         this.id = null;
     }
+    /**
+     * Constructs a Punch object for an existing punch retrieved from the database.
+     *
+     * @param id                the punch ID
+     * @param terminalid        the terminal ID
+     * @param badge             the employee's badge
+     * @param originaltimestamp the original timestamp of the punch
+     * @param punchtype         the type of punch
+     */
     public Punch(int id, int terminalid, Badge badge,LocalDateTime originaltimestamp, EventType punchtype){ // for existing punch objects
         this.id = id;  // Fixed: assign the provided id instead of null - WW
         this.terminalid = terminalid;
@@ -48,35 +78,41 @@ public class Punch {
     
     
     // Getters
+    /** @return the terminal ID where the punch occurred */
     public int getTerminalid() {
         return terminalid;
     }
-
+    /** @return the badge used for the punch */
     public Badge getBadge() {
         return badge;
     }
-
+    /** @return the punch type (CLOCK IN, CLOCK OUT, TIME OUT) */
     public EventType getPunchtype() {
         return punchtype;
     }
-
+    /** @return the original timestamp of the punch */
     public LocalDateTime getOriginaltimestamp() {
         return originaltimestamp;
     }
-
+    /** @return the adjusted timestamp of the punch */
     public LocalDateTime getAdjustedtimestamp() {
         return adjustedtimestamp;
     }
-    
+    /** @return the punch adjustment type used (if any) */
     public PunchAdjustmentType getAdjustmentType(){
         return adjustmentType;
     }
-    
+    /** @return the punch ID */
     public int id(){
         return id;
     }
     
     // created this printOriginal method -ww
+    /**
+     * Returns a formatted string representing the original timestamp of the punch.
+     *
+     * @return formatted string of original timestamp
+     */
     public String printOriginal() {
         // Convert the entire string to uppercase
         String formattedTimestamp = originaltimestamp.format(TIMESTAMP_FORMAT).toUpperCase();
@@ -93,6 +129,11 @@ public class Punch {
         return sb.toString();
     }
     
+    /**
+     * Returns a formatted string representing the adjusted timestamp and the type of adjustment applied.
+     *
+     * @return formatted string of adjusted timestamp and adjustment type
+     */
     public String printAdjusted() {   
         // Convert the entire string to uppercase
         String formattedTimestamp = adjustedtimestamp.format(TIMESTAMP_FORMAT).toUpperCase();
@@ -108,6 +149,11 @@ public class Punch {
     }
 
     //toString
+    /**
+     * Returns a simple string with basic punch details (used for debugging).
+     *
+     * @return formatted string with ID, terminal, badge, and punch type
+     */
     public String toString() {
 
         StringBuilder sb = new StringBuilder();
@@ -122,6 +168,13 @@ public class Punch {
 
     }
     
+    /**
+     * Adjusts the original punch timestamp according to the shift parameters.
+     * Applies rounding, grace period, dock penalties, and lunch time adjustments.
+     * Sets the adjusted timestamp and adjustment type based on rules defined in the {@link Shift}.
+     *
+     * @param s the shift rule set to apply for adjustment
+     */
     public void adjust(Shift s) {
         // Use the original timestamp with nanoseconds zero
         LocalDateTime original = originaltimestamp.withNano(0);

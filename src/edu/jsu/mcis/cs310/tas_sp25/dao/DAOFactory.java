@@ -6,7 +6,7 @@ import java.sql.*;
  * Creates DAO instances and manages a shared database connection
  * using configuration properties.
  * 
- * @author NLL
+ * @author Nehemias Loarca Lucas
  */
 public final class DAOFactory {
 
