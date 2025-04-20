@@ -210,4 +210,35 @@ public class BadgeDAO {
         
         return result;
     }
+    /*update meathod */
+    public boolean update(Badge badge) {
+    boolean result = false;
+    PreparedStatement statement = null;
+
+    final String UPDATE_BADGE = "UPDATE badge SET description = ? WHERE id = ?";
+
+    try {
+        Connection conn = daoFactory.getConnection();
+
+        if (conn.isValid(0)) {
+            statement = conn.prepareStatement(UPDATE_BADGE);
+            statement.setString(1, badge.getDescription());
+            statement.setString(2, badge.getId());
+
+            int numofChanges = statement.executeUpdate();
+            if (numofChanges == 1) {
+                result = true;
+                System.out.println("Badge updated successfully.");
+            } else {
+                System.out.println("Failed to update, Badge might be not there");
+            }
+        }
+    } catch (SQLException e) {
+        throw new DAOException(e.getMessage());
+    } finally {
+        if (statement != null) try { statement.close(); } catch (SQLException e) { throw new DAOException(e.getMessage()); }
+    }
+
+    return result;
+}
 }
