@@ -82,5 +82,25 @@ public class Version2_BadgeCreateDeleteTest {
         assertEquals(true, result);
 
     }
+       @Test
+public void testUpdateBadge() {
+    BadgeDAO badgeDAO = daoFactory.getBadgeDAO();
+
+    Badge original = badgeDAO.find("08D01475");
+    assertNotNull(original);
+    // System.out.println ("original badge: " + original);// debugging println
+
+    Badge updated = new Badge("08D01475", "Updated Amie Littell");
+    boolean success = badgeDAO.update(updated);
+    assertTrue(success);
+
+    Badge fetched = badgeDAO.find("08D01475");
+    assertEquals("Updated Amie Littell", fetched.getDescription());
+    // System.out.println ("updated badge: " + fetched);// debugging pritnln
+
+
+    badgeDAO.update(original);
+
+}
     
 }
